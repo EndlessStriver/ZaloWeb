@@ -1,11 +1,24 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from './home.module.css'
-import { faAddressBook, faComment } from '@fortawesome/free-regular-svg-icons';
-import { faGear } from '@fortawesome/free-solid-svg-icons';
+import { faAddressBook, faComment, faUser } from '@fortawesome/free-regular-svg-icons';
+import { faGear, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { NavLink, Outlet } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Home: React.FC = () => {
+
+    const [showMenuItem, setShowMenuItem] = React.useState<boolean>(false);
+    const subMenuContainerRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (subMenuContainerRef.current && !subMenuContainerRef.current.contains(event.target as Node)) {
+                setShowMenuItem(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     return (
         <div className={styles.container}>
@@ -21,7 +34,22 @@ const Home: React.FC = () => {
                         </NavLink>
                     </div>
                     <div>
-                        <div className={styles.menuItem} >
+                        <div ref={subMenuContainerRef} className={`${styles.subMenuItemContainer} ${showMenuItem ? styles.hidden : null}`} >
+                            <button>
+                                <FontAwesomeIcon icon={faUser} size='lg' color='black' />
+                                <span>Thông tin tài khoản</span>
+                            </button>
+                            <button>
+                                <FontAwesomeIcon icon={faGear} size='lg' color='black' />
+                                <span>Cài đặt</span>
+                            </button>
+                            <hr />
+                            <button>
+                                <FontAwesomeIcon icon={faRightFromBracket} size='lg' color='red' />
+                                <span>Đăng xuất </span>
+                            </button>
+                        </div>
+                        <div className={`${styles.menuItem} ${showMenuItem ? styles.active : null}`} onClick={() => setShowMenuItem(!showMenuItem)} >
                             <FontAwesomeIcon icon={faGear} size='xl' color='white' />
                         </div>
                     </div>
