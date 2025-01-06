@@ -2,13 +2,20 @@ import React, { useEffect } from 'react'
 import styles from './home.module.css'
 import { faAddressBook, faComment, faUser } from '@fortawesome/free-regular-svg-icons';
 import { faGear, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import { NavLink, Outlet } from 'react-router';
+import { NavLink, Outlet, useNavigate } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { JwtIsExpired } from '../util/MyJwtDecode';
 
 const Home: React.FC = () => {
 
+    const navigate = useNavigate();
     const [showMenuItem, setShowMenuItem] = React.useState<boolean>(false);
     const subMenuContainerRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (JwtIsExpired()) navigate('/login');
+        console.log("Đã kiểm tra token");
+    }, [navigate]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

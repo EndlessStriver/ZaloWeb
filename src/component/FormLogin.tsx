@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styles from './formLogin.module.css'
 import { Link, useNavigate } from 'react-router'
+import { Login } from '../service/AuthService'
 
 interface Account {
     email: string
@@ -14,7 +15,12 @@ const FormLogin: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        navigate('/')
+        Login(account.email, account.password)
+            .then((myAccount) => {
+                localStorage.setItem('accessToken', myAccount.accessToken);
+                navigate('/');
+            })
+            .catch((e) => alert(e.response.data.message))
     }
 
     return (
@@ -22,7 +28,7 @@ const FormLogin: React.FC = () => {
             <form className={styles.form} onSubmit={handleSubmit}>
                 <input
                     type="text"
-                    placeholder="Địa chỉ Email"
+                    placeholder="Tên đăng nhập"
                     value={account.email}
                     onChange={(e) => setAccount({ ...account, email: e.target.value })}
                 />
