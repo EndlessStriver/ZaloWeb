@@ -4,7 +4,7 @@ import { faAddressBook, faComment, faUser } from '@fortawesome/free-regular-svg-
 import { faGear, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { NavLink, Outlet, useNavigate } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { JwtIsExpired } from '../util/MyJwtDecode';
+import { MyJwtIsExpired } from '../util/MyJwtDecode';
 
 const Home: React.FC = () => {
 
@@ -13,8 +13,10 @@ const Home: React.FC = () => {
     const subMenuContainerRef = React.useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (JwtIsExpired()) navigate('/login');
-        console.log("Đã kiểm tra token");
+        const checkTokenIsExpired = async () => {
+            if (await MyJwtIsExpired()) navigate('/login');
+        }
+        checkTokenIsExpired();
     }, [navigate]);
 
     useEffect(() => {

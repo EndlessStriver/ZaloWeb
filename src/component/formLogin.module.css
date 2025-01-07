@@ -14,6 +14,13 @@
     padding: 30px 40px;
 }
 
+.form .globalError {
+    text-align: start;
+    color: red;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
 .form input {
     border: none;
     border-bottom: 1px solid #e0e0e0;

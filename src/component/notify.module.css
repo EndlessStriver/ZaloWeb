@@ -1,0 +1,58 @@
+.container {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    z-index: 9999;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 350px;
+    background-color: #fff;
+    animation: slideRight 0.5s ease;
+}
+
+.container.success {
+    border-top: 4px solid #2ecc71;
+}
+
+.container.error {
+    border-top: 4px solid #e74c3c;
+}
+
+.container.info {
+    border-top: 4px solid #3498db;
+}
+
+.lable {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.lable.success {
+    color: #2ecc71;
+}
+
+.lable.error {
+    color: #e74c3c;
+}
+
+.lable.info {
+    color: #3498db;
+}
+
+.content {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+@keyframes slideRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

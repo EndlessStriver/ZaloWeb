@@ -1,26 +1,58 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import styles from './formLogin.module.css'
 import { Link, useNavigate } from 'react-router'
-import { Login } from '../service/AuthService'
+import { LoginApi } from '../service/AuthService'
+import { MyJwtIsExpired } from '../util/MyJwtDecode'
+import axios from 'axios'
+import { NotifyContext } from '../context/NotifyContext'
 
 interface Account {
-    email: string
+    username: string
+    password: string
+}
+
+interface Errors {
+    username: string
     password: string
 }
 
 const FormLogin: React.FC = () => {
 
     const navigate = useNavigate();
-    const [account, setAccount] = useState<Account>({ email: "", password: "" })
+    const { dispatch } = useContext(NotifyContext);
+    const [account, setAccount] = useState<Account>({ username: "", password: "" })
+    const [errors, setErrors] = useState<Errors>({ username: "", password: "" });
+    const [loading, setLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        const checkTokenIsExpired = async () => {
+            if (await MyJwtIsExpired() === false) navigate('/');
+        }
+        checkTokenIsExpired();
+    }, [navigate]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        Login(account.email, account.password)
-            .then((myAccount) => {
-                localStorage.setItem('accessToken', myAccount.accessToken);
+        const loginRequest = async () => {
+            try {
+                setLoading(true);
+                const response = await LoginApi(account.username, account.password);
+                localStorage.setItem('accessToken', response.accessToken);
                 navigate('/');
-            })
-            .catch((e) => alert(e.response.data.message))
+                dispatch({ type: "success", payload: "Đăng nhập thành công" });
+                setLoading(false);
+            } catch (error) {
+                setAccount({ username: "", password: "" });
+                if (axios.isAxiosError(error) && error.response) {
+                    dispatch({ type: "error", payload: error.response.data.message });
+                    const myErrors = error.response.data.errors as Errors;
+                    setErrors({ ...myErrors });
+                } else {
+                    dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+                }
+            }
+        }
+        loginRequest();
     }
 
     return (
@@ -29,16 +61,24 @@ const FormLogin: React.FC = () => {
                 <input
                     type="text"
                     placeholder="Tên đăng nhập"
-                    value={account.email}
-                    onChange={(e) => setAccount({ ...account, email: e.target.value })}
+                    value={account.username}
+                    onChange={(e) => {
+                        setErrors({ ...errors, username: "" });
+                        setAccount({ ...account, username: e.target.value })
+                    }}
                 />
+                <span className={styles.globalError}>{errors.username}</span>
                 <input
                     type="password"
                     placeholder="Mật khẩu"
                     value={account.password}
-                    onChange={(e) => setAccount({ ...account, password: e.target.value })}
+                    onChange={(e) => {
+                        setErrors({ ...errors, password: "" });
+                        setAccount({ ...account, password: e.target.value })
+                    }}
                 />
-                <button type='submit'>Đăng nhập</button>
+                <span className={styles.globalError}>{errors.password}</span>
+                <button disabled={loading} type='submit'>{loading ? "Đang xử lý..." : "Đăng nhập"}</button>
                 <Link to={"/forgot-password"}>Quên mật khẩu?</Link>
             </form>
         </div>
