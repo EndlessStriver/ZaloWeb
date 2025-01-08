@@ -1,14 +1,18 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import styles from './home.module.css'
 import { faAddressBook, faComment, faUser } from '@fortawesome/free-regular-svg-icons';
 import { faGear, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { NavLink, Outlet, useNavigate } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
+import { LogoutApi } from '../service/AuthService';
+import { NotifyContext } from '../context/NotifyContext';
+import axios from 'axios';
 
 const Home: React.FC = () => {
 
     const navigate = useNavigate();
+    const { dispatch } = useContext(NotifyContext);
     const [showMenuItem, setShowMenuItem] = React.useState<boolean>(false);
     const subMenuContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -28,6 +32,21 @@ const Home: React.FC = () => {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    const logout = async () => {
+        try {
+            await LogoutApi();
+            localStorage.removeItem('accessToken');
+            navigate('/login');
+            dispatch({ type: 'success', payload: 'Đăng xuất thành công' });
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                dispatch({ type: 'error', payload: error.response.data.message });
+            } else {
+                dispatch({ type: 'error', payload: 'Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối' });
+            }
+        }
+    }
 
     return (
         <div className={styles.container}>
@@ -53,7 +72,7 @@ const Home: React.FC = () => {
                                 <span>Cài đặt</span>
                             </button>
                             <hr />
-                            <button>
+                            <button onClick={logout} >
                                 <FontAwesomeIcon icon={faRightFromBracket} size='lg' color='red' />
                                 <span>Đăng xuất </span>
                             </button>

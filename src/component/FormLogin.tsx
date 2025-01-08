@@ -42,6 +42,7 @@ const FormLogin: React.FC = () => {
                 dispatch({ type: "success", payload: "Đăng nhập thành công" });
                 setLoading(false);
             } catch (error) {
+                setLoading(false);
                 setAccount({ username: "", password: "" });
                 if (axios.isAxiosError(error) && error.response) {
                     dispatch({ type: "error", payload: error.response.data.message });
