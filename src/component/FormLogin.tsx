@@ -5,6 +5,9 @@ import { LoginApi } from '../service/AuthService'
 import { MyJwtIsExpired } from '../util/MyJwtDecode'
 import axios from 'axios'
 import { NotifyContext } from '../context/NotifyContext'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye, faEyeSlash, faUser } from '@fortawesome/free-regular-svg-icons'
+import { faLock } from '@fortawesome/free-solid-svg-icons'
 
 interface Account {
     username: string
@@ -20,9 +23,11 @@ const FormLogin: React.FC = () => {
 
     const navigate = useNavigate();
     const { dispatch } = useContext(NotifyContext);
+
     const [account, setAccount] = useState<Account>({ username: "", password: "" })
     const [errors, setErrors] = useState<Errors>({ username: "", password: "" });
     const [loading, setLoading] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
 
     useEffect(() => {
         const checkTokenIsExpired = async () => {
@@ -59,27 +64,40 @@ const FormLogin: React.FC = () => {
     return (
         <div className={styles.container}>
             <form className={styles.form} onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Tên đăng nhập"
-                    value={account.username}
-                    onChange={(e) => {
-                        setErrors({ ...errors, username: "" });
-                        setAccount({ ...account, username: e.target.value })
-                    }}
-                />
+                <div className={styles.formGroup}>
+                    <span>
+                        <FontAwesomeIcon icon={faUser} size='1x' />
+                    </span>
+                    <input
+                        type="text"
+                        placeholder="Tên đăng nhập"
+                        value={account.username}
+                        onChange={(e) => {
+                            setErrors({ ...errors, username: "" });
+                            setAccount({ ...account, username: e.target.value })
+                        }}
+                    />
+                </div>
                 <span className={styles.globalError}>{errors.username}</span>
-                <input
-                    type="password"
-                    placeholder="Mật khẩu"
-                    value={account.password}
-                    onChange={(e) => {
-                        setErrors({ ...errors, password: "" });
-                        setAccount({ ...account, password: e.target.value })
-                    }}
-                />
+                <div className={styles.formGroup}>
+                    <span>
+                        <FontAwesomeIcon icon={faLock} size='1x' />
+                    </span>
+                    <input
+                        type={`${showPassword ? "text" : "password"}`}
+                        placeholder="Mật khẩu"
+                        value={account.password}
+                        onChange={(e) => {
+                            setErrors({ ...errors, password: "" });
+                            setAccount({ ...account, password: e.target.value })
+                        }}
+                    />
+                    <button type='button' onClick={() => setShowPassword(!showPassword)} className={styles.buttonShowPassword}>
+                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                    </button>
+                </div>
                 <span className={styles.globalError}>{errors.password}</span>
-                <button disabled={loading} type='submit'>{loading ? "Đang xử lý..." : "Đăng nhập"}</button>
+                <button className={styles.buttonSubmit} disabled={loading} type='submit'>{loading ? "Đang xử lý..." : "Đăng nhập"}</button>
                 <Link to={"/forgot-password"}>Quên mật khẩu?</Link>
             </form>
         </div>

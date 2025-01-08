@@ -21,11 +21,21 @@
     font-size: 14px;
 }
 
-.form input {
-    border: none;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 10px;
+.formGroup {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 0 10px;
+}
+
+.form input {
+    width: 100%;
+    border: none;
+    padding: 10px;
     font-size: 14px;
     color: gray;
 }
@@ -34,7 +44,16 @@
     outline: none;
 }
 
-.form button {
+.form .buttonShowPassword {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 14px;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.form .buttonSubmit {
     background-color: rgb(1, 144, 243);
     color: #ffffff;
     border: none;
