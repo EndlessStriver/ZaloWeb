@@ -1,0 +1,52 @@
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 67px);
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 15px;
+    gap: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    height: auto;
+}
+
+.navbar button {
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    background-color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+    color: gray;
+    border-bottom: 2px solid transparent;
+}
+
+.navbar button:hover {
+    border-bottom: 2px solid #005ae0;
+    color: #005ae0;
+    transition: all 1s ease-in-out;
+}
+
+.chat {
+    flex: 1;
+    overflow-y: auto;
+    flex-direction: column;
+}
+
+.chat::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+.chat::-webkit-scrollbar-thumb {
+    background: rgb(211, 211, 211);
+    border-radius: 4px;
+}

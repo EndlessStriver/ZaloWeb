@@ -1,18 +1,19 @@
-import Login from "./page/Login"
 import './App.css'
-import { BrowserRouter, Route, Routes } from "react-router"
-import Home from "./page/Home"
-import Chat from "./page/Chat"
-import BookUser from "./page/BookUser"
+import { BrowserRouter, Navigate, Route, Routes } from "react-router"
+import LoginPage from "./page/LoginPage"
+import HomePage from './page/HomePage'
+import ChatPage from './page/ChatPage'
+import BookUserPage from './page/BookUserPage'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Home />}>
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/book-user" element={<BookUser />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<HomePage />}>
+          <Route index element={<Navigate to="/chat" replace />} />
+          <Route path="/chat" element={<ChatPage />} />
+          <Route path="/book-user-group" element={<BookUserPage />} />
         </Route>
         <Route path="*" element={<h1>Not Found</h1>} />
       </Routes>

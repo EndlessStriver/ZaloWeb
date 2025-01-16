@@ -56,11 +56,10 @@
     border-radius: 6px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     list-style-type: none;
-    opacity: 0;
 }
 
 .sidebar .menu .subMenuItemContainer.hidden {
-    opacity: 1;
+    display: none;
     transition: all 0.5s;
 }
 

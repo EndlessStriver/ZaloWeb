@@ -1,0 +1,36 @@
+.chatItem {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    background-color: #ffffff;
+    height: auto;
+}
+
+.chatItem:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.chatItem img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: contain;
+    border: 1px solid #f0f0f0;
+}
+
+.chatItem .chatName {
+    font-size: 16px;
+    font-weight: 500;
+    color: #2e2e2e;
+    margin-bottom: 8px;
+}
+
+.chatItem .chatMessage {
+    font-size: 14px;
+    font-weight: 400;
+    color: gray;
+}

@@ -1,8 +1,8 @@
 import React from 'react';
-import styles from './login.module.css'
+import styles from './loginPage.module.css'
 import FormLogin from '../component/FormLogin';
 
-const Login: React.FC = () => {
+const LoginPage: React.FC = () => {
     return (
         <div className={styles.container}>
             <h1><a className={styles.logo}></a></h1>
@@ -16,4 +16,4 @@ const Login: React.FC = () => {
     );
 }
 
-export default Login;
+export default LoginPage;

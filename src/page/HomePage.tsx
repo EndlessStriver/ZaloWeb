@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import styles from './home.module.css'
+import styles from './homePage.module.css'
 import { faAddressBook, faComment, faUser } from '@fortawesome/free-regular-svg-icons';
 import { faGear, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { NavLink, Outlet, useNavigate } from 'react-router';
@@ -9,7 +9,7 @@ import { LogoutApi } from '../service/AuthService';
 import { NotifyContext } from '../context/NotifyContext';
 import axios from 'axios';
 
-const Home: React.FC = () => {
+const HomePage: React.FC = () => {
 
     const navigate = useNavigate();
     const { dispatch } = useContext(NotifyContext);
@@ -57,12 +57,12 @@ const Home: React.FC = () => {
                         <NavLink to="/chat" className={({ isActive }) => isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem} >
                             <FontAwesomeIcon icon={faComment} size='xl' color='white' />
                         </NavLink>
-                        <NavLink to="/book-user" className={({ isActive }) => isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem} >
+                        <NavLink to="/book-user-group" className={({ isActive }) => isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem} >
                             <FontAwesomeIcon icon={faAddressBook} size='xl' color='white' />
                         </NavLink>
                     </div>
                     <div>
-                        <div ref={subMenuContainerRef} className={`${styles.subMenuItemContainer} ${showMenuItem ? styles.hidden : null}`} >
+                        <div ref={subMenuContainerRef} className={`${styles.subMenuItemContainer} ${!showMenuItem ? styles.hidden : null}`} >
                             <button>
                                 <FontAwesomeIcon icon={faUser} size='lg' color='black' />
                                 <span>Thông tin tài khoản</span>
@@ -90,4 +90,4 @@ const Home: React.FC = () => {
     );
 }
 
-export default Home;
+export default HomePage;
