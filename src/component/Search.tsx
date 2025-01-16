@@ -2,21 +2,38 @@ import { faMagnifyingGlass, faUserPlus, faUsers } from "@fortawesome/free-solid-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from './search.module.css';
 
-const Search: React.FC = () => {
+interface SearchProps {
+    isForcusSearch: boolean;
+    setIsFocusSearch: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Search: React.FC<SearchProps> = (props) => {
+
     return (
         <div className={styles.searchContainer}>
-            <div className={styles.search}>
+            <div className={styles.searchLeft}>
                 <div className={styles.searchIcon}>
                     <FontAwesomeIcon icon={faMagnifyingGlass} size='sm' color='gray' />
                 </div>
-                <input type='text' placeholder="Tìm kiếm" />
+                <input onFocus={() => props.setIsFocusSearch(true)} type='search' placeholder="Tìm kiếm" />
             </div>
-            <button>
-                <FontAwesomeIcon icon={faUserPlus} size='1x' color='gray' />
-            </button>
-            <button>
-                <FontAwesomeIcon icon={faUsers} size='1x' color='gray' />
-            </button>
+            <div className={styles.searchRight}>
+                {
+                    props.isForcusSearch ?
+                        <button onClick={() => props.setIsFocusSearch(false)} className={styles.closeButton}>
+                            <span>Đóng</span>
+                        </button>
+                        :
+                        <>
+                            <button>
+                                <FontAwesomeIcon icon={faUserPlus} size='1x' color='gray' />
+                            </button>
+                            <button>
+                                <FontAwesomeIcon icon={faUsers} size='1x' color='gray' />
+                            </button>
+                        </>
+                }
+            </div>
         </div>
     );
 }

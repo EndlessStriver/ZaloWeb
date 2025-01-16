@@ -8,7 +8,10 @@
 
 .sidebar {
     grid-area: sidebar;
+    display: flex;
+    flex-direction: column;
     background-color: #ffffff;
+    height: 100vh;
 }
 
 .content {

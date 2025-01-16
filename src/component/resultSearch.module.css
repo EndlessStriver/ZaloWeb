@@ -1,0 +1,23 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.noResultSearch {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.noResultSearch .icon {
+    padding: 20px 0;
+}
+
+.noResultSearch .lable {
+    font-size: 14px;
+    font-weight: 500;
+    color: gray;
+}
