@@ -18,10 +18,13 @@ const HomePage: React.FC = () => {
 
     useEffect(() => {
         const checkTokenIsExpired = async () => {
-            if (await MyJwtIsExpired()) navigate('/login');
+            if (await MyJwtIsExpired()) {
+                navigate('/login');
+                dispatch({ type: 'error', payload: 'Phiên đăng nhập đã hết hạn' });
+            }
         }
         checkTokenIsExpired();
-    }, [navigate]);
+    }, [navigate, dispatch]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

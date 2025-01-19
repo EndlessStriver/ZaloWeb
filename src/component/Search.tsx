@@ -5,6 +5,8 @@ import styles from './search.module.css';
 interface SearchProps {
     isForcusSearch: boolean;
     setIsFocusSearch: React.Dispatch<React.SetStateAction<boolean>>;
+    keyword: string;
+    setKeyword: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Search: React.FC<SearchProps> = (props) => {
@@ -15,7 +17,13 @@ const Search: React.FC<SearchProps> = (props) => {
                 <div className={styles.searchIcon}>
                     <FontAwesomeIcon icon={faMagnifyingGlass} size='sm' color='gray' />
                 </div>
-                <input onFocus={() => props.setIsFocusSearch(true)} type='search' placeholder="Tìm kiếm" />
+                <input
+                    onFocus={() => props.setIsFocusSearch(true)}
+                    onChange={(e) => props.setKeyword(e.target.value)}
+                    value={props.keyword}
+                    type='search'
+                    placeholder="Tìm kiếm"
+                />
             </div>
             <div className={styles.searchRight}>
                 {

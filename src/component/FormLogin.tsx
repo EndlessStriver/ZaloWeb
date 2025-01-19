@@ -39,22 +39,24 @@ const FormLogin: React.FC = () => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const loginRequest = async () => {
-            try {
-                setLoading(true);
-                const response = await LoginApi(account.username, account.password);
-                localStorage.setItem('accessToken', response.accessToken);
-                navigate('/');
-                dispatch({ type: "success", payload: "Đăng nhập thành công" });
-                setLoading(false);
-            } catch (error) {
-                setLoading(false);
-                setAccount({ username: "", password: "" });
-                if (axios.isAxiosError(error) && error.response) {
-                    dispatch({ type: "error", payload: error.response.data.message });
-                    const myErrors = error.response.data.errors as Errors;
-                    setErrors({ ...myErrors });
-                } else {
-                    dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+            if (await MyJwtIsExpired() === false) {
+                try {
+                    setLoading(true);
+                    const response = await LoginApi(account.username, account.password);
+                    localStorage.setItem('accessToken', response.accessToken);
+                    navigate('/');
+                    dispatch({ type: "success", payload: "Đăng nhập thành công" });
+                    setLoading(false);
+                } catch (error) {
+                    setLoading(false);
+                    setAccount({ username: "", password: "" });
+                    if (axios.isAxiosError(error) && error.response) {
+                        dispatch({ type: "error", payload: error.response.data.message });
+                        const myErrors = error.response.data.errors as Errors;
+                        setErrors({ ...myErrors });
+                    } else {
+                        dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+                    }
                 }
             }
         }
