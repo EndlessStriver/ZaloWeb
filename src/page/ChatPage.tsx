@@ -11,6 +11,7 @@ import axios from 'axios';
 import { NotifyContext } from '../context/NotifyContext';
 import { validatePhoneNumber } from '../util/ValidateForm';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
+import FormAddFriend from '../component/FormAddFriend';
 
 const ChatPage: React.FC = () => {
 
@@ -19,6 +20,7 @@ const ChatPage: React.FC = () => {
     const [rooms, setRooms] = useState<ChatRoomGroup[]>([]);
     const [isFocusSearch, setIsFocusSearch] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isShowFormAddFriend, setIsShowFormAddFriend] = useState<boolean>(false);
 
     const { dispatch } = useContext(NotifyContext);
 
@@ -68,14 +70,30 @@ const ChatPage: React.FC = () => {
                     setIsFocusSearch={setIsFocusSearch}
                     keyword={keyword}
                     setKeyword={setKeyword}
+                    isShowFormAddFriend={isShowFormAddFriend}
+                    setIsShowFormAddFriend={setIsShowFormAddFriend}
                 />
                 {
-                    !isFocusSearch ? <Chat /> : <ResultSearch users={users} rooms={rooms} isLoading={isLoading} />
+                    !isFocusSearch
+                        ? <Chat />
+                        :
+                        <ResultSearch
+                            users={users}
+                            rooms={rooms}
+                            isLoading={isLoading}
+                        />
                 }
             </div>
             <div className={styles.content}>
 
             </div>
+            {
+                isShowFormAddFriend &&
+                <FormAddFriend
+                    isShow={isShowFormAddFriend}
+                    setShow={setIsShowFormAddFriend}
+                />
+            }
         </div>
     );
 }

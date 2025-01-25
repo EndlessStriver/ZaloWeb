@@ -1,0 +1,220 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    background-color: #ffffff;
+    border-radius: 5px;
+    width: 400px;
+    max-width: 400px;
+    min-height: 500px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.header {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333333;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+}
+
+.header button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 18px;
+    color: #555555;
+    transition: color 0.2s ease-in-out;
+}
+
+.header button:hover {
+    color: #0068ff;
+}
+
+.error {
+    font-size: 12px;
+    color: red;
+    margin-left: 60px;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.body .inputContainer {
+    font-size: 16px;
+    font-weight: 600;
+    color: #525252;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    gap: 15px;
+    padding: 10px 15px 0 15px;
+    background-color: #ffffff;
+}
+
+.body .inputContainer input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    outline: none;
+    font-size: 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    color: #333333;
+    background-color: #f8f8f8;
+    transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.body .inputContainer input:focus {
+    border-color: #0068ff;
+    background-color: #ffffff;
+}
+
+.body .resultContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 0 15px;
+    font-size: 13px;
+    color: gray;
+    gap: 10px;
+}
+
+.result {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.result .resultItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.result .resultItem:hover {
+    background-color: #f9f9f9;
+}
+
+.result .resultItem .info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.result .resultItem img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.result .resultItem button {
+    background-color: #ffffff;
+    border: 1px solid #0068ff;
+    color: #0068ff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+}
+
+.result .resultItem button:hover {
+    background-color: #0068ff;
+    color: #ffffff;
+}
+
+.noResult {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: gray;
+    padding: 10px;
+    margin: 0 15px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px;
+    border-top: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+}
+
+.footer button {
+    background-color: #1c5072;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.footer button:hover {
+    background-color: #174260;
+}
+
+.footer button:first-child {
+    background-color: #e5e7eb;
+    color: #152744;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.footer button:first-child:hover {
+    background-color: #d4d6da;
+}
+
+.footer button:last-child {
+    background-color: #0068ff;
+    color: white;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.footer button:last-child:hover {
+    background-color: #0056cc;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

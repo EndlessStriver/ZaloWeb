@@ -39,7 +39,7 @@ const FormLogin: React.FC = () => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const loginRequest = async () => {
-            if (await MyJwtIsExpired() === false) {
+            if (await MyJwtIsExpired()) {
                 try {
                     setLoading(true);
                     const response = await LoginApi(account.username, account.password);

@@ -7,6 +7,8 @@ interface SearchProps {
     setIsFocusSearch: React.Dispatch<React.SetStateAction<boolean>>;
     keyword: string;
     setKeyword: React.Dispatch<React.SetStateAction<string>>;
+    isShowFormAddFriend: boolean;
+    setIsShowFormAddFriend: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Search: React.FC<SearchProps> = (props) => {
@@ -33,7 +35,7 @@ const Search: React.FC<SearchProps> = (props) => {
                         </button>
                         :
                         <>
-                            <button>
+                            <button onClick={() => props.setIsShowFormAddFriend(true)}>
                                 <FontAwesomeIcon icon={faUserPlus} size='1x' color='gray' />
                             </button>
                             <button>
