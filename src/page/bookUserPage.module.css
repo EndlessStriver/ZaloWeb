@@ -12,6 +12,8 @@
     flex-direction: column;
     background-color: #ffffff;
     height: 100vh;
+    max-width: 370px;
+    width: 370px;
 }
 
 .content {

@@ -10,11 +10,17 @@
     align-items: center;
     gap: 10px;
     padding: 10px;
+    text-decoration: none;
+}
+
+.item.active {
+    background-color: #dbebff;
 }
 
 .item:hover {
-    background-color: #f0f0f0;
+    background-color: #dbebff;
     cursor: pointer;
+    transition: 0.5s;
 }
 
 .item .icon {

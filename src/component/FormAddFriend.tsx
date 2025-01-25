@@ -95,7 +95,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
                             <div className={styles.result}>
                                 <div className={styles.resultItem}>
                                     <div className={styles.info}>
-                                        <img src={user?.avatarUrl ? user.avatarUrl : "./public/images/avt_default.png"} alt="avatar" />
+                                        <img src={user?.avatarUrl ? user.avatarUrl : "../public/images/avt_default.png"} alt="avatar" />
                                         <span>{user.firstName + " " + user.lastName}</span>
                                     </div>
                                     <button>Kết bạn</button>

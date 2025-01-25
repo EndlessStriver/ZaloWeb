@@ -11,6 +11,8 @@ import { validatePhoneNumber } from '../util/ValidateForm';
 import { getByPhoneNumber, getFriendsAndMessageContacts } from '../service/UserService';
 import { getChatRoomsByRoomNameAndUserId } from '../service/ChatRoomService';
 import axios from 'axios';
+import FormAddFriend from '../component/FormAddFriend';
+import { Outlet } from 'react-router';
 
 const BookUserPage: React.FC = () => {
 
@@ -19,6 +21,7 @@ const BookUserPage: React.FC = () => {
     const [rooms, setRooms] = useState<ChatRoomGroup[]>([]);
     const [isFocusSearch, setIsFocusSearch] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isShowFormAddFriend, setIsShowFormAddFriend] = useState<boolean>(false);
 
     const { dispatch } = useContext(NotifyContext);
 
@@ -68,14 +71,23 @@ const BookUserPage: React.FC = () => {
                     setIsFocusSearch={setIsFocusSearch}
                     keyword={keyword}
                     setKeyword={setKeyword}
+                    isShowFormAddFriend={isShowFormAddFriend}
+                    setIsShowFormAddFriend={setIsShowFormAddFriend}
                 />
                 {
                     !isFocusSearch ? <GroupAndFriend /> : <ResultSearch users={users} rooms={rooms} isLoading={isLoading} />
                 }
             </div>
             <div className={styles.content}>
-
+                <Outlet />
             </div>
+            {
+                isShowFormAddFriend &&
+                <FormAddFriend
+                    isShow={isShowFormAddFriend}
+                    setShow={setIsShowFormAddFriend}
+                />
+            }
         </div>
     );
 }
