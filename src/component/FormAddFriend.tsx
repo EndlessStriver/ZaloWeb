@@ -84,7 +84,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
                     {
                         !user &&
                         <div className={styles.noResult}>
-                            <FontAwesomeIcon icon={faClipboard} size='2x' color='#bdc3c7' />
+                            <FontAwesomeIcon icon={faClipboard} size='3x' color='#bdc3c7' />
                             <span>Không có kết quả tìm kiếm</span>
                         </div>
                     }

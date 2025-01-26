@@ -43,6 +43,7 @@ const FormLogin: React.FC = () => {
                 try {
                     setLoading(true);
                     const response = await LoginApi(account.username, account.password);
+                    localStorage.setItem('user', JSON.stringify(response));
                     localStorage.setItem('accessToken', response.accessToken);
                     navigate('/');
                     dispatch({ type: "success", payload: "Đăng nhập thành công" });

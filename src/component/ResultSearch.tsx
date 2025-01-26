@@ -3,6 +3,7 @@ import styles from './resultSearch.module.css';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import User from '../interface/master-data/User';
 import { ChatRoomGroup } from '../interface/master-data/ChatRoom';
+import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 
 interface ResultSearchProps {
     users: User[];
@@ -17,7 +18,7 @@ const ResultSearch: React.FC<ResultSearchProps> = (props) => {
                 props.users.length === 0 && props.rooms.length === 0 ?
                     <div className={styles.noResultSearch}>
                         <div className={styles.icon}>
-                            <FontAwesomeIcon icon={faSearch} size='3x' color="#74b9ff" />
+                            <FontAwesomeIcon icon={faPaperPlane} size='4x' color="#74b9ff" />
                         </div>
                         <span className={styles.lable}>Chưa có kết quả tìm kiếm?</span>
                     </div>

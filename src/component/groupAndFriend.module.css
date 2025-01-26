@@ -11,6 +11,7 @@
     gap: 10px;
     padding: 10px;
     text-decoration: none;
+    user-select: none;
 }
 
 .item.active {
