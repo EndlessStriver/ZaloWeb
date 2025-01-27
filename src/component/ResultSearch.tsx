@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './resultSearch.module.css';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import User from '../interface/master-data/User';
 import { ChatRoomGroup } from '../interface/master-data/ChatRoom';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
+import AvtDefault from '../../public/images/avt_default.png';
 
 interface ResultSearchProps {
     users: User[];
@@ -31,7 +31,7 @@ const ResultSearch: React.FC<ResultSearchProps> = (props) => {
                                 {
                                     props.users.map((user) => (
                                         <div key={user.userId} className={styles.item}>
-                                            <img src={user.avatarUrl ? user.avatarUrl : `./public/images/avt_default.png`} alt="avatar" />
+                                            <img src={user.avatarUrl ? user.avatarUrl : AvtDefault} alt="avatar" />
                                             <span className={styles.itemName}>{user.firstName + " " + user.lastName}</span>
                                         </div>
                                     ))
@@ -45,7 +45,7 @@ const ResultSearch: React.FC<ResultSearchProps> = (props) => {
                                 {
                                     props.rooms.map((room) => (
                                         <div key={room.chatRoomId} className={styles.item}>
-                                            <img src={room.chatRoomId ? room.roomImage : `./public/images/avt_default.png`} alt="avatar" />
+                                            <img src={room.chatRoomId ? room.roomImage : AvtDefault} alt="avatar" />
                                             <span className={styles.itemName}>{room.roomName}</span>
                                         </div>
                                     ))

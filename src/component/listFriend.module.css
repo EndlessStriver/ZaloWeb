@@ -33,7 +33,7 @@
 .body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     width: 100%;
     flex-grow: 1;
@@ -61,6 +61,7 @@
     color: #3498db;
     font-style: italic;
     user-select: none;
+    margin-top: 250px;
 }
 
 .body .notFriends {

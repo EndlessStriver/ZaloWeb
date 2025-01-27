@@ -8,6 +8,7 @@ import axios from 'axios';
 import { NotifyContext } from '../context/NotifyContext';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import User from '../interface/master-data/User';
+import AvtDefault from '../../public/images/avt_default.png';
 
 const ListFriend: React.FC = () => {
 
@@ -87,8 +88,8 @@ const ListFriend: React.FC = () => {
                                                         <div className={styles.info}>
                                                             <img src={
                                                                 myUser.userId === friendShip.user.userId
-                                                                    ? friendShip.friend.avatarUrl || '../public/images/avt_default.png'
-                                                                    : friendShip.user.avatarUrl || '../public/images/avt_default.png'
+                                                                    ? friendShip.friend.avatarUrl || AvtDefault
+                                                                    : friendShip.user.avatarUrl || AvtDefault
                                                             } alt="avatar" />
                                                             <span className={styles.name}>
                                                                 {
