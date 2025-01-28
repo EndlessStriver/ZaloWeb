@@ -27,7 +27,8 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
     const [friendType, setFriendType] = useState<"NOT_FRIEND" | "FRIEND" | "REQUEST_SENT" | "REQUEST_RECEIVED" | "IS_YOU">("IS_YOU");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [loading, setLoading] = useState(false);
-    const [loadingAddFriend, setLoadingAddFriend] = useState(false);
+    const [loadingAcceptFriend, setLoadingAcceptFriend] = useState(false);
+    const [loadingCancelFriend, setLoadingCancelFriend] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
@@ -78,12 +79,12 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
             return;
         }
         try {
-            setLoadingAddFriend(true);
+            setLoadingAcceptFriend(true);
             await addFriend(friendId);
             setFriendType("REQUEST_SENT");
-            setLoadingAddFriend(false);
+            setLoadingAcceptFriend(false);
         } catch (error) {
-            setLoadingAddFriend(false);
+            setLoadingAcceptFriend(false);
             if (axios.isAxiosError(error) && error.response) {
                 dispatch({ type: "error", payload: error.response.data.message });
             } else {
@@ -99,12 +100,12 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
             return;
         }
         try {
-            setLoadingAddFriend(true);
+            setLoadingCancelFriend(true);
             await cancelFriendShip(friendId);
             setFriendType("NOT_FRIEND");
-            setLoadingAddFriend(false);
+            setLoadingCancelFriend(false);
         } catch (error) {
-            setLoadingAddFriend(false);
+            setLoadingCancelFriend(false);
             if (axios.isAxiosError(error) && error.response) {
                 dispatch({ type: "error", payload: error.response.data.message });
             } else {
@@ -120,12 +121,12 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
             return;
         }
         try {
-            setLoadingAddFriend(true);
+            setLoadingAcceptFriend(true);
             await acceptFriendShip(friendId);
             setFriendType("FRIEND");
-            setLoadingAddFriend(false);
+            setLoadingAcceptFriend(false);
         } catch (error) {
-            setLoadingAddFriend(false);
+            setLoadingAcceptFriend(false);
             if (axios.isAxiosError(error) && error.response) {
                 dispatch({ type: "error", payload: error.response.data.message });
             } else {
@@ -188,9 +189,9 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
                                                 <button
                                                     className={styles.send}
                                                     onClick={() => onAddFriend(user.userId)}
-                                                    disabled={loadingAddFriend}
+                                                    disabled={loadingAcceptFriend}
                                                 >
-                                                    {loadingAddFriend ? "Đang gửi..." : "Kết bạn"}
+                                                    {loadingAcceptFriend ? "Đang gửi..." : "Kết bạn"}
                                                 </button>
                                             }
                                             {
@@ -198,9 +199,9 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
                                                 <button
                                                     className={styles.cancel}
                                                     onClick={() => onCancelFriendShip(user.userId)}
-                                                    disabled={loadingAddFriend}
+                                                    disabled={loadingCancelFriend}
                                                 >
-                                                    {loadingAddFriend ? "Đang hủy..." : "Hủy yêu cầu"}
+                                                    {loadingCancelFriend ? "Đang hủy..." : "Hủy yêu cầu"}
                                                 </button>
                                             }
                                             {
@@ -209,16 +210,16 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
                                                     <button
                                                         className={styles.send}
                                                         onClick={() => onAcceptFriendShip(user.userId)}
-                                                        disabled={loadingAddFriend}
+                                                        disabled={loadingAcceptFriend}
                                                     >
-                                                        {loadingAddFriend ? "Đang xử lý..." : "Chấp nhận"}
+                                                        {loadingAcceptFriend ? "Đang xử lý..." : "Chấp nhận"}
                                                     </button>
                                                     <button
                                                         className={styles.cancel}
                                                         onClick={() => onCancelFriendShip(user.userId)}
-                                                        disabled={loadingAddFriend}
+                                                        disabled={loadingCancelFriend}
                                                     >
-                                                        {loadingAddFriend ? "Đang hủy..." : "Từ chối"}
+                                                        {loadingCancelFriend ? "Đang hủy..." : "Từ chối"}
                                                     </button>
                                                 </>
                                             }

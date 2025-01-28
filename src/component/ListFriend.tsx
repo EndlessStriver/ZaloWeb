@@ -7,13 +7,13 @@ import { getFriends } from '../service/FriendShipService';
 import axios from 'axios';
 import { NotifyContext } from '../context/NotifyContext';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
-import User from '../interface/master-data/User';
 import AvtDefault from '../../public/images/avt_default.png';
+import Account from '../interface/master-data/Account';
 
 const ListFriend: React.FC = () => {
 
     const [friendShips, setFriendShips] = useState<Friendship[]>([]);
-    const myUser: User = JSON.parse(localStorage.getItem("user") as string);
+    const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
     const [loading, setLoading] = useState<boolean>(false);
 
     const { dispatch } = useContext(NotifyContext);
@@ -67,7 +67,7 @@ const ListFriend: React.FC = () => {
                                     </div>
                                     :
                                     <>
-                                        <span className={styles.lable}>Bạn bè (54)</span>
+                                        <span className={styles.lable}>Bạn bè ({friendShips.length})</span>
                                         <div className={styles.listFriend}>
                                             <div className={styles.header}>
                                                 <div className={styles.search}>
@@ -87,15 +87,15 @@ const ListFriend: React.FC = () => {
                                                     <div key={friendShip.friendShipId} className={styles.friend}>
                                                         <div className={styles.info}>
                                                             <img src={
-                                                                myUser.userId === friendShip.user.userId
+                                                                myUser.user.userId === friendShip.user.userId
                                                                     ? friendShip.friend.avatarUrl || AvtDefault
                                                                     : friendShip.user.avatarUrl || AvtDefault
                                                             } alt="avatar" />
                                                             <span className={styles.name}>
                                                                 {
-                                                                    myUser.userId === friendShip.user.userId
-                                                                        ? `${friendShip.user.firstName}  ${friendShip.user.lastName}`
-                                                                        : `${friendShip.friend.firstName}  ${friendShip.friend.lastName}`
+                                                                    myUser.user.userId === friendShip.user.userId
+                                                                        ? `${friendShip.friend.firstName}  ${friendShip.friend.lastName}`
+                                                                        : `${friendShip.user.firstName}  ${friendShip.user.lastName}`
                                                                 }
                                                             </span>
                                                         </div>
