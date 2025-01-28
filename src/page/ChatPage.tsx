@@ -12,6 +12,7 @@ import { NotifyContext } from '../context/NotifyContext';
 import { validatePhoneNumber } from '../util/ValidateForm';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import FormAddFriend from '../component/FormAddFriend';
+import { useNavigate } from 'react-router';
 
 const ChatPage: React.FC = () => {
 
@@ -23,6 +24,7 @@ const ChatPage: React.FC = () => {
     const [isShowFormAddFriend, setIsShowFormAddFriend] = useState<boolean>(false);
 
     const { dispatch } = useContext(NotifyContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!isFocusSearch) {
@@ -34,7 +36,12 @@ const ChatPage: React.FC = () => {
 
     useEffect(() => {
         const id = setTimeout(async () => {
-            if (keyword && await MyJwtIsExpired() === false) {
+            if (await MyJwtIsExpired() === true) {
+                dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+                navigate("/login");
+                return;
+            }
+            if (keyword) {
                 try {
                     setIsLoading(true);
                     if (!validatePhoneNumber(keyword)) {
@@ -60,7 +67,7 @@ const ChatPage: React.FC = () => {
         }, 1000);
 
         return () => clearTimeout(id);
-    }, [keyword, dispatch]);
+    }, [keyword, dispatch, navigate]);
 
     return (
         <div className={styles.container}>

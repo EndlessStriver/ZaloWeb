@@ -116,6 +116,12 @@
     background-color: #f9f9f9;
 }
 
+.result .resultItem .action {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
 .result .resultItem .info {
     display: flex;
     flex-direction: row;
@@ -130,7 +136,7 @@
     object-fit: cover;
 }
 
-.result .resultItem button {
+.result .resultItem button.send {
     background-color: #ffffff;
     border: 1px solid #0068ff;
     color: #0068ff;
@@ -139,11 +145,37 @@
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
-    transition: all 0.3s ease-in-out;
 }
 
-.result .resultItem button:hover {
+.result .resultItem button.cancel {
+    background-color: #ffffff;
+    border: 1px solid #e74c3c;
+    color: #e74c3c;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.result .resultItem button.friend {
+    background-color: #ffffff;
+    border: 1px solid #2ecc71;
+    color: #2ecc71;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.result .resultItem button.send:hover {
     background-color: #0068ff;
+    color: #ffffff;
+}
+
+.result .resultItem button.cancel:hover {
+    background-color: #e74c3c;
     color: #ffffff;
 }
 

@@ -11,6 +11,7 @@ import axios from 'axios';
 import { NotifyContext } from '../context/NotifyContext';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import { useNavigate } from 'react-router';
+import { acceptFriendShip, addFriend, cancelFriendShip, getFriendTypeByPhoneNumber } from '../service/FriendShipService';
 
 interface FormAddFriendProps {
     isShow: boolean;
@@ -23,8 +24,10 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
     const { dispatch } = useContext(NotifyContext);
 
     const [user, setUser] = useState<User | null>(null);
+    const [friendType, setFriendType] = useState<"NOT_FRIEND" | "FRIEND" | "REQUEST_SENT" | "REQUEST_RECEIVED" | "IS_YOU">("IS_YOU");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [loading, setLoading] = useState(false);
+    const [loadingAddFriend, setLoadingAddFriend] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
@@ -36,6 +39,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
         if (await MyJwtIsExpired()) {
             dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
             navigate("/login");
+            return;
         }
         if (phoneNumber === "") {
             setError("Vui lòng nhập số điện thoại");
@@ -48,11 +52,80 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
         try {
             setLoading(true);
             const myUser = await getByPhoneNumber(phoneNumber);
-            if (!myUser) dispatch({ type: "info", payload: "Số điện thoại chưa được đăng kí, hoặc người dùng không tồn tại" });
+            if (!myUser) {
+                dispatch({ type: "info", payload: "Số điện thoại chưa được đăng kí, hoặc người dùng không tồn tại" });
+                setLoading(false);
+                return;
+            }
+            const myFriendType = await getFriendTypeByPhoneNumber(phoneNumber);
+            setFriendType(myFriendType);
             setUser(myUser);
             setLoading(false);
         } catch (error) {
             setLoading(false);
+            if (axios.isAxiosError(error) && error.response) {
+                dispatch({ type: "error", payload: error.response.data.message });
+            } else {
+                dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+            }
+        }
+    }
+
+    const onAddFriend = async (friendId: string) => {
+        if (await MyJwtIsExpired()) {
+            dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+            navigate("/login");
+            return;
+        }
+        try {
+            setLoadingAddFriend(true);
+            await addFriend(friendId);
+            setFriendType("REQUEST_SENT");
+            setLoadingAddFriend(false);
+        } catch (error) {
+            setLoadingAddFriend(false);
+            if (axios.isAxiosError(error) && error.response) {
+                dispatch({ type: "error", payload: error.response.data.message });
+            } else {
+                dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+            }
+        }
+    }
+
+    const onCancelFriendShip = async (friendId: string) => {
+        if (await MyJwtIsExpired()) {
+            dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+            navigate("/login");
+            return;
+        }
+        try {
+            setLoadingAddFriend(true);
+            await cancelFriendShip(friendId);
+            setFriendType("NOT_FRIEND");
+            setLoadingAddFriend(false);
+        } catch (error) {
+            setLoadingAddFriend(false);
+            if (axios.isAxiosError(error) && error.response) {
+                dispatch({ type: "error", payload: error.response.data.message });
+            } else {
+                dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+            }
+        }
+    }
+
+    const onAcceptFriendShip = async (friendId: string) => {
+        if (await MyJwtIsExpired()) {
+            dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+            navigate("/login");
+            return;
+        }
+        try {
+            setLoadingAddFriend(true);
+            await acceptFriendShip(friendId);
+            setFriendType("FRIEND");
+            setLoadingAddFriend(false);
+        } catch (error) {
+            setLoadingAddFriend(false);
             if (axios.isAxiosError(error) && error.response) {
                 dispatch({ type: "error", payload: error.response.data.message });
             } else {
@@ -98,7 +171,59 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
                                         <img src={user?.avatarUrl ? user.avatarUrl : "../public/images/avt_default.png"} alt="avatar" />
                                         <span>{user.firstName + " " + user.lastName}</span>
                                     </div>
-                                    <button>Kết bạn</button>
+                                    {
+                                        friendType !== "IS_YOU" &&
+                                        <div className={styles.action}>
+                                            {
+                                                friendType === "FRIEND" &&
+                                                <button
+                                                    className={styles.friend}
+                                                    disabled
+                                                >
+                                                    Bạn bè
+                                                </button>
+                                            }
+                                            {
+                                                friendType === "NOT_FRIEND" &&
+                                                <button
+                                                    className={styles.send}
+                                                    onClick={() => onAddFriend(user.userId)}
+                                                    disabled={loadingAddFriend}
+                                                >
+                                                    {loadingAddFriend ? "Đang gửi..." : "Kết bạn"}
+                                                </button>
+                                            }
+                                            {
+                                                friendType === "REQUEST_SENT" &&
+                                                <button
+                                                    className={styles.cancel}
+                                                    onClick={() => onCancelFriendShip(user.userId)}
+                                                    disabled={loadingAddFriend}
+                                                >
+                                                    {loadingAddFriend ? "Đang hủy..." : "Hủy yêu cầu"}
+                                                </button>
+                                            }
+                                            {
+                                                friendType === "REQUEST_RECEIVED" &&
+                                                <>
+                                                    <button
+                                                        className={styles.send}
+                                                        onClick={() => onAcceptFriendShip(user.userId)}
+                                                        disabled={loadingAddFriend}
+                                                    >
+                                                        {loadingAddFriend ? "Đang xử lý..." : "Chấp nhận"}
+                                                    </button>
+                                                    <button
+                                                        className={styles.cancel}
+                                                        onClick={() => onCancelFriendShip(user.userId)}
+                                                        disabled={loadingAddFriend}
+                                                    >
+                                                        {loadingAddFriend ? "Đang hủy..." : "Từ chối"}
+                                                    </button>
+                                                </>
+                                            }
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>

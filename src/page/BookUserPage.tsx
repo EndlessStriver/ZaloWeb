@@ -12,7 +12,7 @@ import { getByPhoneNumber, getFriendsAndMessageContacts } from '../service/UserS
 import { getChatRoomsByRoomNameAndUserId } from '../service/ChatRoomService';
 import axios from 'axios';
 import FormAddFriend from '../component/FormAddFriend';
-import { Outlet } from 'react-router';
+import { Outlet, useNavigate } from 'react-router';
 
 const BookUserPage: React.FC = () => {
 
@@ -24,6 +24,7 @@ const BookUserPage: React.FC = () => {
     const [isShowFormAddFriend, setIsShowFormAddFriend] = useState<boolean>(false);
 
     const { dispatch } = useContext(NotifyContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!isFocusSearch) {
@@ -35,7 +36,12 @@ const BookUserPage: React.FC = () => {
 
     useEffect(() => {
         const id = setTimeout(async () => {
-            if (keyword && await MyJwtIsExpired() === false) {
+            if (await MyJwtIsExpired() === true) {
+                dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+                navigate("/login");
+                return;
+            }
+            if (keyword) {
                 try {
                     setIsLoading(true);
                     if (!validatePhoneNumber(keyword)) {
