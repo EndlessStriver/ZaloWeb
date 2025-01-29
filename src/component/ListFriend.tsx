@@ -1,19 +1,26 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './ListFriend.module.css';
-import { faArrowDownAZ, faEllipsis, faSearch, faSpinner, faUserTag, faUserTie } from '@fortawesome/free-solid-svg-icons';
-import { useContext, useEffect, useState } from 'react';
+import { faArrowDownAZ, faClose, faEllipsis, faSearch, faSpinner, faUserTag, faUserTie } from '@fortawesome/free-solid-svg-icons';
+import React, { useContext, useEffect, useState } from 'react';
 import Friendship from '../interface/master-data/FriendShip';
-import { getFriends } from '../service/FriendShipService';
+import { cancelFriendShip, getFriends } from '../service/FriendShipService';
 import axios from 'axios';
 import { NotifyContext } from '../context/NotifyContext';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import AvtDefault from '../../public/images/avt_default.png';
 import Account from '../interface/master-data/Account';
+import Overlay from './Overlay';
+import { useNavigate } from 'react-router';
+
+interface FriendProps {
+    friendShips: Friendship[];
+    setFriendShips: React.Dispatch<React.SetStateAction<Friendship[]>>;
+    friendShip: Friendship;
+}
 
 const ListFriend: React.FC = () => {
 
     const [friendShips, setFriendShips] = useState<Friendship[]>([]);
-    const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
     const [loading, setLoading] = useState<boolean>(false);
 
     const { dispatch } = useContext(NotifyContext);
@@ -84,25 +91,12 @@ const ListFriend: React.FC = () => {
                                             </div>
                                             {
                                                 friendShips.map((friendShip) => (
-                                                    <div key={friendShip.friendShipId} className={styles.friend}>
-                                                        <div className={styles.info}>
-                                                            <img src={
-                                                                myUser.user.userId === friendShip.user.userId
-                                                                    ? friendShip.friend.avatarUrl || AvtDefault
-                                                                    : friendShip.user.avatarUrl || AvtDefault
-                                                            } alt="avatar" />
-                                                            <span className={styles.name}>
-                                                                {
-                                                                    myUser.user.userId === friendShip.user.userId
-                                                                        ? `${friendShip.friend.firstName}  ${friendShip.friend.lastName}`
-                                                                        : `${friendShip.user.firstName}  ${friendShip.user.lastName}`
-                                                                }
-                                                            </span>
-                                                        </div>
-                                                        <div className={styles.action}>
-                                                            <FontAwesomeIcon icon={faEllipsis} size='1x' color='rgb(85, 85, 85)' />
-                                                        </div>
-                                                    </div>
+                                                    <Friend
+                                                        key={friendShip.friendShipId}
+                                                        friendShip={friendShip}
+                                                        friendShips={friendShips}
+                                                        setFriendShips={setFriendShips}
+                                                    />
                                                 ))
                                             }
                                         </div>
@@ -114,5 +108,123 @@ const ListFriend: React.FC = () => {
         </div>
     );
 }
+
+const Friend: React.FC<FriendProps> = ({ friendShip, friendShips, setFriendShips }) => {
+
+    const [showSubMenu, setShowSubMenu] = useState<boolean>(false);
+    const [showModalDelete, setShowModalDelete] = useState<boolean>(false);
+    const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
+    const subMenuContainerRef = React.useRef<HTMLDivElement>(null);
+    const [loadingAcceptFriend, setLoadingAcceptFriend] = useState(false);
+
+    const { dispatch } = useContext(NotifyContext);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (subMenuContainerRef.current && !subMenuContainerRef.current.contains(event.target as Node)) {
+                setShowSubMenu(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const onCancelFriendShip = async (friendId: string, friendShipId: string) => {
+        if (await MyJwtIsExpired()) {
+            dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+            navigate("/login");
+            return;
+        }
+        try {
+            setLoadingAcceptFriend(true);
+            await cancelFriendShip(friendId);
+            dispatch({ type: "success", payload: "Xóa bạn bè thành công" });
+            setShowModalDelete(false);
+            setFriendShips(friendShips.filter(f => f.friendShipId !== friendShipId));
+            setLoadingAcceptFriend(false);
+        } catch (error) {
+            setLoadingAcceptFriend(false);
+            if (axios.isAxiosError(error) && error.response) {
+                dispatch({ type: "error", payload: error.response.data.message });
+            } else {
+                dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+            }
+        }
+    }
+
+    return (
+        <div key={friendShip.friendShipId} className={styles.friend}>
+            <div className={styles.info}>
+                <img src={
+                    myUser.user.userId === friendShip.user.userId
+                        ? friendShip.friend.avatarUrl || AvtDefault
+                        : friendShip.user.avatarUrl || AvtDefault
+                } alt="avatar" />
+                <span className={styles.name}>
+                    {
+                        myUser.user.userId === friendShip.user.userId
+                            ? `${friendShip.friend.firstName}  ${friendShip.friend.lastName}`
+                            : `${friendShip.user.firstName}  ${friendShip.user.lastName}`
+                    }
+                </span>
+            </div>
+            <div ref={subMenuContainerRef} className={styles.action} onClick={() => setShowSubMenu(true)}>
+                <FontAwesomeIcon icon={faEllipsis} size='1x' color='rgb(85, 85, 85)' />
+                {
+                    showSubMenu ?
+                        <div className={styles.subMenu}>
+                            <div className={styles.item}>
+                                <span>Trò chuyện</span>
+                            </div>
+                            <div className={styles.item}>
+                                <span>Chặn</span>
+                            </div>
+                            <div
+                                onClick={() => setShowModalDelete(true)}
+                                className={styles.item}
+                            >
+                                <span>Xóa bạn</span>
+                            </div>
+                        </div>
+                        : null
+                }
+            </div>
+            {
+                showModalDelete &&
+                <Overlay>
+                    <div className={styles.modalDelete}>
+                        <div className={styles.headerModal}>
+                            <span>Xác nhận</span>
+                            <button onClick={() => setShowModalDelete(false)}>
+                                <FontAwesomeIcon icon={faClose} size='xl' color='rgb(85, 85, 85)' />
+                            </button>
+                        </div>
+                        <div className={styles.body}>
+                            <span>Bạn có chắc chắn muốn xóa người này ra khỏi danh sách bạn bè không?</span>
+                        </div>
+                        <div className={styles.footer}>
+                            <button
+                                className={styles.cancel}
+                                onClick={() => setShowModalDelete(false)}
+                                disabled={loadingAcceptFriend}
+                            >
+                                Không
+                            </button>
+                            <button
+                                onClick={() => onCancelFriendShip(myUser.user.userId === friendShip.user.userId ? friendShip.friend.userId : friendShip.user.userId, friendShip.friendShipId)}
+                                className={styles.confirm}
+                                disabled={loadingAcceptFriend}
+                            >
+                                {loadingAcceptFriend ? "Đang xử lý..." : "Xóa"}
+                            </button>
+                        </div>
+                    </div>
+                </Overlay>
+            }
+        </div>
+    );
+}
+
 
 export default ListFriend;
