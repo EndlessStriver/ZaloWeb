@@ -11,6 +11,7 @@ import { acceptFriendShip, cancelFriendShip, getReceivedFriendRequests } from '.
 import AvtDefault from '../../public/images/avt_default.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
+import { SocketContext } from '../context/SocketContext';
 
 const ListFriendInvitation = () => {
 
@@ -21,7 +22,20 @@ const ListFriendInvitation = () => {
     const [loadingCancelFriend, setLoadingCancelFriend] = useState(false);
 
     const { dispatch } = useContext(NotifyContext);
+    const socket = useContext(SocketContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (socket) {
+            socket.subscribe(`/private/friend-request-cancel/${myUser.user.userId}`, (message) => {
+                console.log("Received friend request cancel");
+                setReceivedFriendRequests(
+                    receivedFriendRequests.filter((friendShip) => (friendShip.user.userId === myUser.user.userId && friendShip.friend.userId === message.body)
+                        || (friendShip.user.userId === message.body && friendShip.friend.userId === myUser.user.userId)
+                    ));
+            });
+        }
+    }, []);
 
     useEffect(() => {
         const fetchFriendShips = async () => {

@@ -8,6 +8,7 @@ import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import { LogoutApi } from '../service/AuthService';
 import { NotifyContext } from '../context/NotifyContext';
 import axios from 'axios';
+import SocketProvider from '../context/SocketContext';
 
 const HomePage: React.FC = () => {
 
@@ -52,44 +53,46 @@ const HomePage: React.FC = () => {
     }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.sidebar}>
-                <div className={styles.avatar}></div>
-                <div className={styles.menu}>
-                    <div>
-                        <NavLink to="/chat" className={({ isActive }) => isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem} >
-                            <FontAwesomeIcon icon={faComment} size='xl' color='white' />
-                        </NavLink>
-                        <NavLink to="/book-user-group" className={({ isActive }) => isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem} >
-                            <FontAwesomeIcon icon={faAddressBook} size='xl' color='white' />
-                        </NavLink>
-                    </div>
-                    <div>
-                        <div ref={subMenuContainerRef} className={`${styles.subMenuItemContainer} ${!showMenuItem ? styles.hidden : null}`} >
-                            <button>
-                                <FontAwesomeIcon icon={faUser} size='lg' color='black' />
-                                <span>Thông tin tài khoản</span>
-                            </button>
-                            <button>
-                                <FontAwesomeIcon icon={faGear} size='lg' color='black' />
-                                <span>Cài đặt</span>
-                            </button>
-                            <hr />
-                            <button onClick={logout} >
-                                <FontAwesomeIcon icon={faRightFromBracket} size='lg' color='red' />
-                                <span>Đăng xuất </span>
-                            </button>
+        <SocketProvider>
+            <div className={styles.container}>
+                <div className={styles.sidebar}>
+                    <div className={styles.avatar}></div>
+                    <div className={styles.menu}>
+                        <div>
+                            <NavLink to="/chat" className={({ isActive }) => isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem} >
+                                <FontAwesomeIcon icon={faComment} size='xl' color='white' />
+                            </NavLink>
+                            <NavLink to="/book-user-group" className={({ isActive }) => isActive ? `${styles.menuItem} ${styles.active}` : styles.menuItem} >
+                                <FontAwesomeIcon icon={faAddressBook} size='xl' color='white' />
+                            </NavLink>
                         </div>
-                        <div className={`${styles.menuItem} ${showMenuItem ? styles.active : null}`} onClick={() => setShowMenuItem(!showMenuItem)} >
-                            <FontAwesomeIcon icon={faGear} size='xl' color='white' />
+                        <div>
+                            <div ref={subMenuContainerRef} className={`${styles.subMenuItemContainer} ${!showMenuItem ? styles.hidden : null}`} >
+                                <button>
+                                    <FontAwesomeIcon icon={faUser} size='lg' color='black' />
+                                    <span>Thông tin tài khoản</span>
+                                </button>
+                                <button>
+                                    <FontAwesomeIcon icon={faGear} size='lg' color='black' />
+                                    <span>Cài đặt</span>
+                                </button>
+                                <hr />
+                                <button onClick={logout} >
+                                    <FontAwesomeIcon icon={faRightFromBracket} size='lg' color='red' />
+                                    <span>Đăng xuất </span>
+                                </button>
+                            </div>
+                            <div className={`${styles.menuItem} ${showMenuItem ? styles.active : null}`} onClick={() => setShowMenuItem(!showMenuItem)} >
+                                <FontAwesomeIcon icon={faGear} size='xl' color='white' />
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div className={styles.main}>
+                    <Outlet />
+                </div>
             </div>
-            <div className={styles.main}>
-                <Outlet />
-            </div>
-        </div>
+        </SocketProvider>
     );
 }
 

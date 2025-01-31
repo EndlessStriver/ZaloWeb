@@ -12,6 +12,7 @@ import { NotifyContext } from '../context/NotifyContext';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import { useNavigate } from 'react-router';
 import { acceptFriendShip, addFriend, cancelFriendShip, getFriendTypeByPhoneNumber } from '../service/FriendShipService';
+import { SocketContext } from '../context/SocketContext';
 
 interface FormAddFriendProps {
     isShow: boolean;
@@ -22,6 +23,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
 
     const navigate = useNavigate();
     const { dispatch } = useContext(NotifyContext);
+    const socket = useContext(SocketContext);
 
     const [user, setUser] = useState<User | null>(null);
     const [friendType, setFriendType] = useState<"NOT_FRIEND" | "FRIEND" | "REQUEST_SENT" | "REQUEST_RECEIVED" | "IS_YOU">("IS_YOU");
@@ -82,6 +84,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
             setLoadingAcceptFriend(true);
             await addFriend(friendId);
             setFriendType("REQUEST_SENT");
+            if (socket) socket.publish({ destination: `/app/friend-request/send`, headers: { receiveId: friendId } });
             setLoadingAcceptFriend(false);
         } catch (error) {
             setLoadingAcceptFriend(false);
@@ -103,6 +106,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
             setLoadingCancelFriend(true);
             await cancelFriendShip(friendId);
             setFriendType("NOT_FRIEND");
+            if (socket) socket.publish({ destination: `/app/friend-request/cancel`, headers: { receiveId: friendId } });
             setLoadingCancelFriend(false);
         } catch (error) {
             setLoadingCancelFriend(false);
