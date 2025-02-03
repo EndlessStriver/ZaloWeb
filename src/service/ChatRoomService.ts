@@ -1,4 +1,4 @@
-import { ChatRoomGroup } from '../interface/master-data/ChatRoom';
+import { ChatRoomGroup, ChatRoomSingle } from '../interface/master-data/ChatRoom';
 import axios from "axios";
 
 const getChatRoomsByRoomNameAndUserId = async (roomName: string): Promise<ChatRoomGroup[]> => {
@@ -8,4 +8,18 @@ const getChatRoomsByRoomNameAndUserId = async (roomName: string): Promise<ChatRo
     return response.data.data
 }
 
-export { getChatRoomsByRoomNameAndUserId }
+const getChatRoomForUsers = async (friendId: string): Promise<ChatRoomSingle | null> => {
+    const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
+    const accessToken = localStorage.getItem('accessToken');
+    const response = await axios.get(`${API_ENDPOINT}/chatrooms/users?friendId=${friendId}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+    return response.data.data
+}
+
+const createChatSingle = async (friendId: string): Promise<ChatRoomSingle> => {
+    const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
+    const accessToken = localStorage.getItem('accessToken');
+    const response = await axios.post(`${API_ENDPOINT}/chatrooms/single?friendId=${friendId}`, null, { headers: { Authorization: `Bearer ${accessToken}` } })
+    return response.data.data
+}
+
+export { getChatRoomsByRoomNameAndUserId, getChatRoomForUsers, createChatSingle }

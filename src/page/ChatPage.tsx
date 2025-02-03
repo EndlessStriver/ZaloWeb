@@ -13,6 +13,7 @@ import { validatePhoneNumber } from '../util/ValidateForm';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import FormAddFriend from '../component/FormAddFriend';
 import { useNavigate } from 'react-router';
+import RoomChat from '../component/RoomChat';
 
 const ChatPage: React.FC = () => {
 
@@ -22,9 +23,18 @@ const ChatPage: React.FC = () => {
     const [isFocusSearch, setIsFocusSearch] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isShowFormAddFriend, setIsShowFormAddFriend] = useState<boolean>(false);
+    const [isShowChatRoom, setIsShowChatRoom] = useState<boolean>(false);
+
+    const [room, setRoom] = useState<ChatRoomGroup | null>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     const { dispatch } = useContext(NotifyContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (room || user) setIsShowChatRoom(true);
+        if (!room && !user) setIsShowChatRoom(false);
+    }, [room, user])
 
     useEffect(() => {
         if (!isFocusSearch) {
@@ -88,11 +98,20 @@ const ChatPage: React.FC = () => {
                             users={users}
                             rooms={rooms}
                             isLoading={isLoading}
+                            setRoom={setRoom}
+                            setUser={setUser}
+                            setIsShowChatRoom={setIsShowChatRoom}
                         />
                 }
             </div>
             <div className={styles.content}>
-
+                {
+                    isShowChatRoom &&
+                    <RoomChat
+                        user={user}
+                        room={room}
+                    />
+                }
             </div>
             {
                 isShowFormAddFriend &&

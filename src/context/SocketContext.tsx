@@ -16,11 +16,14 @@ const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
 
     useEffect(() => {
+
+        if (socket) return;
+
         const stompClient = new Client({
             brokerURL: 'ws://localhost:8080/ws',
-            // debug: function (str) {
-            //     console.log(str);
-            // },
+            debug: function (str) {
+                console.log(str);
+            },
             onConnect: () => {
                 setSocket(stompClient);
                 console.log('Kết nối socket thành công!');
@@ -45,7 +48,7 @@ const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         return () => {
             stompClient.deactivate();
         };
-    }, []);
+    }, [dispatch, myUser.user.userId]);
 
     return (
         <SocketContext.Provider value={socket}>
