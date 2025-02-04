@@ -3,7 +3,7 @@ import styles from './chatPage.module.css'
 import Chat from '../component/Chat';
 import Search from '../component/Search';
 import ResultSearch from '../component/ResultSearch';
-import { getByPhoneNumber, getFriendsAndMessageContacts } from '../service/UserService';
+import { getFriendsAndMessageContacts, getUserByPhoneNumber } from '../service/UserService';
 import { getChatRoomsByRoomNameAndUserId } from '../service/ChatRoomService';
 import User from '../interface/master-data/User';
 import { ChatRoomGroup } from '../interface/master-data/ChatRoom';
@@ -60,7 +60,7 @@ const ChatPage: React.FC = () => {
                         setRooms(listRoom);
                     }
                     if (validatePhoneNumber(keyword)) {
-                        const user = await getByPhoneNumber(keyword);
+                        const user = await getUserByPhoneNumber(keyword);
                         if (user) setUsers([user]);
                         if (!user) setUsers([]);
                     }

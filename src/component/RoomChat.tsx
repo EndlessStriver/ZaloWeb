@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFile, faImage, faPaperPlane } from '@fortawesome/free-regular-svg-icons'
 import User from '../interface/master-data/User'
 import { ChatRoomGroup, ChatRoomSingle } from '../interface/master-data/ChatRoom'
-import { createChatSingle, getChatRoomForUsers } from '../service/ChatRoomService'
+import { createSingleChatRoom, getChatRoomForUsers } from '../service/ChatRoomService'
 import { SocketContext } from '../context/SocketContext'
 import Account from '../interface/master-data/Account'
 import { NotifyContext } from '../context/NotifyContext'
@@ -83,7 +83,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
         if (isCreateRoom === false) {
             if (props.user) {
                 try {
-                    const response = await createChatSingle(props.user.userId);
+                    const response = await createSingleChatRoom(props.user.userId);
                     setIsCreateRoom(true);
                     setRoomInfo(response);
                     if (socket) socket.publish({ destination: "/app/chat/send", headers: { senderId: myUser.user.userId, chatRoomId: response.chatRoomId }, body: messageSend });

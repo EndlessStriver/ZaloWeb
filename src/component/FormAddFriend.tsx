@@ -6,12 +6,12 @@ import { useContext, useEffect, useState } from 'react';
 import { validatePhoneNumber } from '../util/ValidateForm';
 import { faClipboard } from '@fortawesome/free-regular-svg-icons';
 import User from '../interface/master-data/User';
-import { getByPhoneNumber } from '../service/UserService';
+import { getUserByPhoneNumber } from '../service/UserService';
 import axios from 'axios';
 import { NotifyContext } from '../context/NotifyContext';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import { useNavigate } from 'react-router';
-import { acceptFriendShip, addFriend, cancelFriendShip, getFriendTypeByPhoneNumber } from '../service/FriendShipService';
+import { acceptFriendRequest, cancelFriendship, checkFriendshipByPhoneNumber, sendFriendRequest } from '../service/FriendShipService';
 import { SocketContext } from '../context/SocketContext';
 
 interface FormAddFriendProps {
@@ -54,13 +54,13 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
         }
         try {
             setLoading(true);
-            const myUser = await getByPhoneNumber(phoneNumber);
+            const myUser = await getUserByPhoneNumber(phoneNumber);
             if (!myUser) {
                 dispatch({ type: "info", payload: "Số điện thoại chưa được đăng kí, hoặc người dùng không tồn tại" });
                 setLoading(false);
                 return;
             }
-            const myFriendType = await getFriendTypeByPhoneNumber(phoneNumber);
+            const myFriendType = await checkFriendshipByPhoneNumber(phoneNumber);
             setFriendType(myFriendType);
             setUser(myUser);
             setLoading(false);
@@ -82,7 +82,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
         }
         try {
             setLoadingAcceptFriend(true);
-            await addFriend(friendId);
+            await sendFriendRequest(friendId);
             setFriendType("REQUEST_SENT");
             if (socket) socket.publish({ destination: `/app/friend-request/send`, headers: { receiveId: friendId } });
             setLoadingAcceptFriend(false);
@@ -104,7 +104,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
         }
         try {
             setLoadingCancelFriend(true);
-            await cancelFriendShip(friendId);
+            await cancelFriendship(friendId);
             setFriendType("NOT_FRIEND");
             if (socket) socket.publish({ destination: `/app/friend-request/cancel`, headers: { receiveId: friendId } });
             setLoadingCancelFriend(false);
@@ -126,7 +126,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
         }
         try {
             setLoadingAcceptFriend(true);
-            await acceptFriendShip(friendId);
+            await acceptFriendRequest(friendId);
             setFriendType("FRIEND");
             setLoadingAcceptFriend(false);
         } catch (error) {

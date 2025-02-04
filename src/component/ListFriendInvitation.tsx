@@ -7,7 +7,7 @@ import Account from '../interface/master-data/Account';
 import { NotifyContext } from '../context/NotifyContext';
 import { faHandshakeAngle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
-import { acceptFriendShip, cancelFriendShip, getReceivedFriendRequests } from '../service/FriendShipService';
+import { acceptFriendRequest, cancelFriendship, getReceivedFriendRequests } from '../service/FriendShipService';
 import AvtDefault from '../../public/images/avt_default.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
@@ -68,7 +68,7 @@ const ListFriendInvitation = () => {
         }
         try {
             setLoadingAcceptFriend(true);
-            await acceptFriendShip(friendId);
+            await acceptFriendRequest(friendId);
             setReceivedFriendRequests(receivedFriendRequests.filter((friendShip) => friendShip.friendShipId !== friendShipId));
             setLoadingAcceptFriend(false);
         } catch (error) {
@@ -89,7 +89,7 @@ const ListFriendInvitation = () => {
         }
         try {
             setLoadingCancelFriend(true);
-            await cancelFriendShip(friendId);
+            await cancelFriendship(friendId);
             setReceivedFriendRequests(receivedFriendRequests.filter((friendShip) => friendShip.friendShipId !== friendShipId));
             setLoadingCancelFriend(false);
         } catch (error) {

@@ -7,7 +7,11 @@ interface UserChatRoomSingle {
     updatedAt: string;
 }
 
-interface UserChatRoomGroup extends UserChatRoomSingle {
+interface UserChatRoomGroup {
+    userChatRoomId: string;
+    user: User;
+    createdAt: string;
+    updatedAt: string;
     role: string;
 }
 

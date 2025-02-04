@@ -8,7 +8,7 @@ import User from '../interface/master-data/User';
 import { NotifyContext } from '../context/NotifyContext';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import { validatePhoneNumber } from '../util/ValidateForm';
-import { getByPhoneNumber, getFriendsAndMessageContacts } from '../service/UserService';
+import { getFriendsAndMessageContacts, getUserByPhoneNumber } from '../service/UserService';
 import { getChatRoomsByRoomNameAndUserId } from '../service/ChatRoomService';
 import axios from 'axios';
 import FormAddFriend from '../component/FormAddFriend';
@@ -50,7 +50,7 @@ const BookUserPage: React.FC = () => {
                         setRooms(listRoom);
                     }
                     if (validatePhoneNumber(keyword)) {
-                        const user = await getByPhoneNumber(keyword);
+                        const user = await getUserByPhoneNumber(keyword);
                         if (user) setUsers([user]);
                         if (!user) setUsers([]);
                     }

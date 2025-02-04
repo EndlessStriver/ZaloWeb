@@ -3,7 +3,7 @@ import styles from './ListFriend.module.css';
 import { faArrowDownAZ, faClose, faEllipsis, faSearch, faSpinner, faUserTag, faUserTie } from '@fortawesome/free-solid-svg-icons';
 import React, { useContext, useEffect, useState } from 'react';
 import Friendship from '../interface/master-data/FriendShip';
-import { cancelFriendShip, getFriends } from '../service/FriendShipService';
+import { cancelFriendship, getFriendList } from '../service/FriendShipService';
 import axios from 'axios';
 import { NotifyContext } from '../context/NotifyContext';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
@@ -33,7 +33,7 @@ const ListFriend: React.FC = () => {
                     dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
                     return;
                 }
-                const listFriendShip = await getFriends();
+                const listFriendShip = await getFriendList();
                 setFriendShips(listFriendShip);
                 setLoading(false);
             } catch (error) {
@@ -138,7 +138,7 @@ const Friend: React.FC<FriendProps> = ({ friendShip, friendShips, setFriendShips
         }
         try {
             setLoadingAcceptFriend(true);
-            await cancelFriendShip(friendId);
+            await cancelFriendship(friendId);
             dispatch({ type: "success", payload: "Xóa bạn bè thành công" });
             setShowModalDelete(false);
             setFriendShips(friendShips.filter(f => f.friendShipId !== friendShipId));
