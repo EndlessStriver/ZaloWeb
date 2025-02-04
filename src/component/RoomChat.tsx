@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { KeyboardEventHandler, useContext, useEffect, useState } from 'react'
 import styles from './roomChat.module.css'
 import AvtDefault from '../../public/images/avt_default.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFile, faImage, faPaperPlane } from '@fortawesome/free-regular-svg-icons'
 import User from '../interface/master-data/User'
-import { ChatRoomGroup, ChatRoomSingle } from '../interface/master-data/ChatRoom'
+import ChatRoom from '../interface/master-data/ChatRoom'
 import { createSingleChatRoom, getChatRoomForUsers } from '../service/ChatRoomService'
 import { SocketContext } from '../context/SocketContext'
 import Account from '../interface/master-data/Account'
@@ -12,10 +12,12 @@ import { NotifyContext } from '../context/NotifyContext'
 import axios from 'axios'
 import { MyJwtIsExpired } from '../util/MyJwtDecode'
 import { useNavigate } from 'react-router'
+import { TextMessage } from '../interface/master-data/Message'
+import MessageBubble from './MessageBubble'
 
 interface RoomChatProps {
     user: User | null;
-    room: ChatRoomGroup | null;
+    room: ChatRoom | null;
 }
 
 const RoomChat: React.FC<RoomChatProps> = (props) => {
@@ -24,16 +26,17 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     const { dispatch } = useContext(NotifyContext);
     const navigate = useNavigate();
 
-    const [messages, setMessages] = useState<string[]>([]);
+    const [messages, setMessages] = useState<TextMessage[]>([]);
     const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
     const [messageSend, setMessageSend] = useState<string>("");
-    const [roomInfo, setRoomInfo] = useState<ChatRoomGroup | ChatRoomSingle | null>(null);
+    const [roomInfo, setRoomInfo] = useState<ChatRoom>();
     const [isCreateRoom, setIsCreateRoom] = useState<boolean>(false);
 
     useEffect(() => {
-        if (socket && roomInfo !== null) {
+        if (socket && roomInfo) {
             const subscription = socket.subscribe(`/private/chat/${roomInfo.chatRoomId}`, (response) => {
-                setMessages(preVal => [...preVal, response.body]);
+                const message: TextMessage = JSON.parse(response.body);
+                setMessages(preVal => [...preVal, message]);
             });
             return () => subscription.unsubscribe();
         }
@@ -104,6 +107,10 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
         }
     }
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') onSendMessage();
+    };
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -121,8 +128,8 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
             </div>
             <div className={styles.body}>
                 {
-                    messages.map((message, index) => (
-                        <span key={index}>{message}</span>
+                    messages.slice().reverse().map((message) => (
+                        <MessageBubble key={message.messageId} message={message} />
                     ))
                 }
             </div>
@@ -141,6 +148,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                         placeholder="Nhập tin nhắn"
                         value={messageSend}
                         onChange={(e) => setMessageSend(e.target.value)}
+                        onKeyDown={handleKeyDown}
                     />
                     <button
                         onClick={onSendMessage}

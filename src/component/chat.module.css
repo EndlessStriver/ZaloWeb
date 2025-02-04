@@ -35,6 +35,7 @@
     flex: 1;
     overflow-y: auto;
     flex-direction: column;
+    margin-right: 1px;
 }
 
 .chat::-webkit-scrollbar {

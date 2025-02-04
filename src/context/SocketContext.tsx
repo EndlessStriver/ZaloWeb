@@ -48,7 +48,7 @@ const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         return () => {
             stompClient.deactivate();
         };
-    }, [dispatch, myUser.user.userId]);
+    }, []);
 
     return (
         <SocketContext.Provider value={socket}>

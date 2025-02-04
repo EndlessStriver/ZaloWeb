@@ -1,19 +1,12 @@
 import { UserChatRoomSingle } from "./UserChatRoom";
 
-interface ChatRoomSingle {
+interface ChatRoom {
     chatRoomId: string;
     userChatRooms: UserChatRoomSingle[];
     createdAt: string;
     updatedAt: string;
+    roomName?: string;
+    roomImage?: string;
 }
 
-interface ChatRoomGroup {
-    chatRoomId: string;
-    userChatRooms: UserChatRoomSingle[];
-    createdAt: string;
-    updatedAt: string;
-    roomName: string;
-    roomImage: string;
-}
-
-export type { ChatRoomSingle, ChatRoomGroup };
+export default ChatRoom;

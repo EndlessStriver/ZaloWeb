@@ -1,0 +1,40 @@
+.messageBubble {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 50px;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    margin: 5px 0;
+}
+
+.messageBubble.myMessage {
+    align-self: flex-end;
+    align-items: flex-end;
+    background-color: #dcf8c6;
+}
+
+.messageBubble.friendMessage {
+    align-self: flex-start;
+    align-items: flex-start;
+    background-color: #ffffff;
+}
+
+.content {
+    font-size: 16px;
+    color: #000000;
+}
+
+.messageBubble.myMessage .content {
+    align-items: flex-end;
+}
+
+.timestamp {
+    font-size: 12px;
+    color: #000000;
+}
+
+.messageBubble.friendMessage .timestamp {
+    align-items: flex-end;
+}

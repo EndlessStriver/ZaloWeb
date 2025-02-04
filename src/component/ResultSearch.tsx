@@ -1,15 +1,15 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './resultSearch.module.css';
 import User from '../interface/master-data/User';
-import { ChatRoomGroup } from '../interface/master-data/ChatRoom';
 import { faLightbulb } from '@fortawesome/free-regular-svg-icons';
 import AvtDefault from '../../public/images/avt_default.png';
+import ChatRoom from '../interface/master-data/ChatRoom';
 
 interface ResultSearchProps {
     users: User[];
-    rooms: ChatRoomGroup[];
+    rooms: ChatRoom[];
     isLoading: boolean;
-    setRoom: React.Dispatch<React.SetStateAction<ChatRoomGroup | null>>;
+    setRoom: React.Dispatch<React.SetStateAction<ChatRoom | null>>;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
     setIsShowChatRoom: React.Dispatch<React.SetStateAction<boolean>>;
 }
