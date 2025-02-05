@@ -14,6 +14,7 @@ import { MyJwtIsExpired } from '../util/MyJwtDecode'
 import { useNavigate } from 'react-router'
 import { TextMessage } from '../interface/master-data/Message'
 import MessageBubble from './MessageBubble'
+import { getMessagesByChatRoomId } from '../service/MessageService'
 
 interface RoomChatProps {
     user: User | null;
@@ -31,6 +32,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     const [messageSend, setMessageSend] = useState<string>("");
     const [roomInfo, setRoomInfo] = useState<ChatRoom>();
     const [isCreateRoom, setIsCreateRoom] = useState<boolean>(false);
+    const [isLoadMessage, setIsLoadMessage] = useState<boolean>(false);
 
     useEffect(() => {
         if (socket && roomInfo) {
@@ -72,6 +74,33 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
         }
         getRoomInfo();
     }, [props.user, props.room, dispatch, navigate]);
+
+    useEffect(() => {
+        const getMessageRoom = async () => {
+            try {
+                if (await MyJwtIsExpired() === true) {
+                    dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+                    navigate("/login");
+                    return;
+                }
+                if (roomInfo) {
+                    setIsLoadMessage(true);
+                    const response = await getMessagesByChatRoomId(roomInfo.chatRoomId, { orderBy: "asc" });
+                    setMessages(response.data);
+                    setIsLoadMessage(false);
+                }
+            } catch (error) {
+                setIsLoadMessage(false);
+                if (axios.isAxiosError(error) && error.response) {
+                    dispatch({ type: "error", payload: error.response.data.message });
+                } else {
+                    dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+                }
+            }
+        }
+
+        if (isCreateRoom) getMessageRoom();
+    }, [isCreateRoom]);
 
     const onSendMessage = async () => {
         if (await MyJwtIsExpired() === true) {

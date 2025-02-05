@@ -25,7 +25,7 @@ const checkFriendshipByPhoneNumber = async (phoneNumber: string): Promise<"NOT_F
 const sendFriendRequest = async (friendId: string): Promise<Friendship> => {
     const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
     const accessToken = localStorage.getItem('accessToken');
-    const response = await axios.post(`${API_ENDPOINT}/friendships/requests/sent?friendId=${friendId}`, null, { headers: { Authorization: `Bearer ${accessToken}` } })
+    const response = await axios.post(`${API_ENDPOINT}/friendships/request?friendId=${friendId}`, null, { headers: { Authorization: `Bearer ${accessToken}` } })
     return response.data.data
 }
 

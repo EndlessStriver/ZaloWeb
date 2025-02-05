@@ -1,10 +1,10 @@
 import User from "./User";
 
-interface TextMessage {
+interface Message {
     messageId: string;
     user: User;
     timestamp: string;
     content: string;
 }
 
-export type { TextMessage };
+export default Message;

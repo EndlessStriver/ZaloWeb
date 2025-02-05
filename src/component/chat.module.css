@@ -38,6 +38,19 @@
     margin-right: 1px;
 }
 
+.chat .noChat,
+.chat .loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 20px;
+    gap: 20px;
+    font-style: italic;
+    color: gray;
+}
+
 .chat::-webkit-scrollbar {
     width: 8px;
 }

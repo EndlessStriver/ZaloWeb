@@ -1,3 +1,4 @@
+import Message from "./Message";
 import { UserChatRoomSingle } from "./UserChatRoom";
 
 interface ChatRoom {
@@ -7,6 +8,7 @@ interface ChatRoom {
     updatedAt: string;
     roomName?: string;
     roomImage?: string;
+    newMessage?: Message;
 }
 
 export default ChatRoom;

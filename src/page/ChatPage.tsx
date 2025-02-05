@@ -6,7 +6,6 @@ import ResultSearch from '../component/ResultSearch';
 import { getFriendsAndMessageContacts, getUserByPhoneNumber } from '../service/UserService';
 import { getChatRoomsByRoomNameAndUserId } from '../service/ChatRoomService';
 import User from '../interface/master-data/User';
-import { ChatRoomGroup } from '../interface/master-data/ChatRoom';
 import axios from 'axios';
 import { NotifyContext } from '../context/NotifyContext';
 import { validatePhoneNumber } from '../util/ValidateForm';
@@ -14,18 +13,19 @@ import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import FormAddFriend from '../component/FormAddFriend';
 import { useNavigate } from 'react-router';
 import RoomChat from '../component/RoomChat';
+import ChatRoom from '../interface/master-data/ChatRoom';
 
 const ChatPage: React.FC = () => {
 
     const [keyword, setKeyword] = useState<string>('');
     const [users, setUsers] = useState<User[]>([]);
-    const [rooms, setRooms] = useState<ChatRoomGroup[]>([]);
+    const [rooms, setRooms] = useState<ChatRoom[]>([]);
     const [isFocusSearch, setIsFocusSearch] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isShowFormAddFriend, setIsShowFormAddFriend] = useState<boolean>(false);
     const [isShowChatRoom, setIsShowChatRoom] = useState<boolean>(false);
 
-    const [room, setRoom] = useState<ChatRoomGroup | null>(null);
+    const [room, setRoom] = useState<ChatRoom | null>(null);
     const [user, setUser] = useState<User | null>(null);
 
     const { dispatch } = useContext(NotifyContext);
@@ -92,7 +92,12 @@ const ChatPage: React.FC = () => {
                 />
                 {
                     !isFocusSearch
-                        ? <Chat />
+                        ?
+                        <Chat
+                            setRoom={setRoom}
+                            setUser={setUser}
+                            setIsShowChatRoom={setIsShowChatRoom}
+                        />
                         :
                         <ResultSearch
                             users={users}
