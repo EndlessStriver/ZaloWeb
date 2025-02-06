@@ -43,6 +43,7 @@ const ListFriendInvitation = () => {
                 setLoading(true);
                 if (await MyJwtIsExpired()) {
                     dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+                    navigate("/auth/login");
                     return;
                 }
                 const listReceivedFriendRequests = await getReceivedFriendRequests();
@@ -63,7 +64,7 @@ const ListFriendInvitation = () => {
     const onAcceptFriendShip = async (friendId: string, friendShipId: string) => {
         if (await MyJwtIsExpired()) {
             dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-            navigate("/login");
+            navigate("/auth/login");
             return;
         }
         try {
@@ -84,7 +85,7 @@ const ListFriendInvitation = () => {
     const onCancelFriendShip = async (friendId: string, friendShipId: string) => {
         if (await MyJwtIsExpired()) {
             dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-            navigate("/login");
+            navigate("/auth/login");
             return;
         }
         try {

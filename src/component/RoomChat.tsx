@@ -1,4 +1,4 @@
-import React, { KeyboardEventHandler, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import styles from './roomChat.module.css'
 import AvtDefault from '../../public/images/avt_default.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -12,7 +12,7 @@ import { NotifyContext } from '../context/NotifyContext'
 import axios from 'axios'
 import { MyJwtIsExpired } from '../util/MyJwtDecode'
 import { useNavigate } from 'react-router'
-import { TextMessage } from '../interface/master-data/Message'
+import Message from '../interface/master-data/Message'
 import MessageBubble from './MessageBubble'
 import { getMessagesByChatRoomId } from '../service/MessageService'
 
@@ -27,7 +27,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     const { dispatch } = useContext(NotifyContext);
     const navigate = useNavigate();
 
-    const [messages, setMessages] = useState<TextMessage[]>([]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
     const [messageSend, setMessageSend] = useState<string>("");
     const [roomInfo, setRoomInfo] = useState<ChatRoom>();
@@ -37,7 +37,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     useEffect(() => {
         if (socket && roomInfo) {
             const subscription = socket.subscribe(`/private/chat/${roomInfo.chatRoomId}`, (response) => {
-                const message: TextMessage = JSON.parse(response.body);
+                const message: Message = JSON.parse(response.body);
                 setMessages(preVal => [...preVal, message]);
             });
             return () => subscription.unsubscribe();
@@ -49,7 +49,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
             try {
                 if (await MyJwtIsExpired() === true) {
                     dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-                    navigate("/login");
+                    navigate("/auth/login");
                     return;
                 }
                 if (props.user) {
@@ -80,7 +80,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
             try {
                 if (await MyJwtIsExpired() === true) {
                     dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-                    navigate("/login");
+                    navigate("/auth/login");
                     return;
                 }
                 if (roomInfo) {
@@ -105,7 +105,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     const onSendMessage = async () => {
         if (await MyJwtIsExpired() === true) {
             dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-            navigate("/login");
+            navigate("/auth/login");
             return;
         }
         if (!messageSend) {

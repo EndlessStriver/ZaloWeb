@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import styles from './bookUserPage.module.css'
 import Search from '../component/Search';
-import GroupAndFriend from '../component/GroupAndFriend';
 import ResultSearch from '../component/ResultSearch';
-import { ChatRoomGroup } from '../interface/master-data/ChatRoom';
 import User from '../interface/master-data/User';
 import { NotifyContext } from '../context/NotifyContext';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
@@ -13,18 +11,30 @@ import { getChatRoomsByRoomNameAndUserId } from '../service/ChatRoomService';
 import axios from 'axios';
 import FormAddFriend from '../component/FormAddFriend';
 import { Outlet, useNavigate } from 'react-router';
+import ChatRoom from '../interface/master-data/ChatRoom';
+import RoomChat from '../component/RoomChat';
+import GroupAndFriend from '../component/GroupAndFriend';
 
 const BookUserPage: React.FC = () => {
 
     const [keyword, setKeyword] = useState<string>('');
     const [users, setUsers] = useState<User[]>([]);
-    const [rooms, setRooms] = useState<ChatRoomGroup[]>([]);
+    const [rooms, setRooms] = useState<ChatRoom[]>([]);
     const [isFocusSearch, setIsFocusSearch] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isShowFormAddFriend, setIsShowFormAddFriend] = useState<boolean>(false);
+    const [isShowChatRoom, setIsShowChatRoom] = useState<boolean>(false);
+
+    const [room, setRoom] = useState<ChatRoom | null>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     const { dispatch } = useContext(NotifyContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (room || user) setIsShowChatRoom(true);
+        if (!room && !user) setIsShowChatRoom(false);
+    }, [room, user])
 
     useEffect(() => {
         if (!isFocusSearch) {
@@ -38,7 +48,7 @@ const BookUserPage: React.FC = () => {
         const id = setTimeout(async () => {
             if (await MyJwtIsExpired() === true) {
                 dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-                navigate("/login");
+                navigate("/auth/login");
                 return;
             }
             if (keyword) {
@@ -81,11 +91,32 @@ const BookUserPage: React.FC = () => {
                     setIsShowFormAddFriend={setIsShowFormAddFriend}
                 />
                 {
-                    !isFocusSearch ? <GroupAndFriend /> : <ResultSearch users={users} rooms={rooms} isLoading={isLoading} />
+                    !isFocusSearch
+                        ?
+                        <GroupAndFriend
+                            setIsShowChatRoom={setIsShowChatRoom}
+                        />
+                        :
+                        <ResultSearch
+                            users={users}
+                            rooms={rooms}
+                            isLoading={isLoading}
+                            setRoom={setRoom}
+                            setUser={setUser}
+                            setIsShowChatRoom={setIsShowChatRoom}
+                        />
                 }
             </div>
             <div className={styles.content}>
-                <Outlet />
+                {
+                    isShowChatRoom ?
+                        <RoomChat
+                            user={user}
+                            room={room}
+                        />
+                        :
+                        <Outlet />
+                }
             </div>
             {
                 isShowFormAddFriend &&

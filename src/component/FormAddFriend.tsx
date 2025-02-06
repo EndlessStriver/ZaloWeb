@@ -11,7 +11,7 @@ import axios from 'axios';
 import { NotifyContext } from '../context/NotifyContext';
 import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import { useNavigate } from 'react-router';
-import { acceptFriendRequest, cancelFriendship, checkFriendshipByPhoneNumber, sendFriendRequest } from '../service/FriendShipService';
+import { acceptFriendRequest, cancelFriendship, checkFriendshipByFriendId, sendFriendRequest } from '../service/FriendShipService';
 import { SocketContext } from '../context/SocketContext';
 
 interface FormAddFriendProps {
@@ -41,7 +41,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
     const onSearch = async () => {
         if (await MyJwtIsExpired()) {
             dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-            navigate("/login");
+            navigate("/auth/login");
             return;
         }
         if (phoneNumber === "") {
@@ -54,15 +54,15 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
         }
         try {
             setLoading(true);
-            const myUser = await getUserByPhoneNumber(phoneNumber);
-            if (!myUser) {
+            const friendUser = await getUserByPhoneNumber(phoneNumber);
+            if (!friendUser) {
                 dispatch({ type: "info", payload: "Số điện thoại chưa được đăng kí, hoặc người dùng không tồn tại" });
                 setLoading(false);
                 return;
             }
-            const myFriendType = await checkFriendshipByPhoneNumber(phoneNumber);
+            const myFriendType = await checkFriendshipByFriendId(friendUser.userId);
             setFriendType(myFriendType);
-            setUser(myUser);
+            setUser(friendUser);
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -77,7 +77,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
     const onAddFriend = async (friendId: string) => {
         if (await MyJwtIsExpired()) {
             dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-            navigate("/login");
+            navigate("/auth/login");
             return;
         }
         try {
@@ -99,7 +99,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
     const onCancelFriendShip = async (friendId: string) => {
         if (await MyJwtIsExpired()) {
             dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-            navigate("/login");
+            navigate("/auth/login");
             return;
         }
         try {
@@ -121,7 +121,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
     const onAcceptFriendShip = async (friendId: string) => {
         if (await MyJwtIsExpired()) {
             dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-            navigate("/login");
+            navigate("/auth/login");
             return;
         }
         try {

@@ -1,8 +1,8 @@
 import React from 'react';
-import styles from './loginPage.module.css'
-import FormLogin from '../component/FormLogin';
+import styles from './loginRegisterPage.module.css'
+import { Outlet } from 'react-router';
 
-const LoginPage: React.FC = () => {
+const LoginRegisterPage: React.FC = () => {
     return (
         <div className={styles.container}>
             <h1><a className={styles.logo}></a></h1>
@@ -11,9 +11,9 @@ const LoginPage: React.FC = () => {
                 <br />
                 Để kết nối với ứng dụng Zalo Web
             </h2>
-            <FormLogin />
+            <Outlet />
         </div>
     );
 }
 
-export default LoginPage;
+export default LoginRegisterPage;

@@ -19,9 +19,8 @@ const HomePage: React.FC = () => {
 
     useEffect(() => {
         const checkTokenIsExpired = async () => {
-            if (await MyJwtIsExpired()) {
-                navigate('/login');
-                dispatch({ type: 'error', payload: 'Phiên đăng nhập đã hết hạn' });
+            if (await MyJwtIsExpired() === true) {
+                navigate('/auth/login');
             }
         }
         checkTokenIsExpired();
@@ -41,7 +40,7 @@ const HomePage: React.FC = () => {
         try {
             await LogoutApi();
             localStorage.removeItem('accessToken');
-            navigate('/login');
+            navigate('/auth/login');
             dispatch({ type: 'success', payload: 'Đăng xuất thành công' });
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {

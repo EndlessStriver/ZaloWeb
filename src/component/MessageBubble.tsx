@@ -1,10 +1,10 @@
 import Account from "../interface/master-data/Account";
-import { TextMessage } from "../interface/master-data/Message";
+import Message from "../interface/master-data/Message";
 import { formatDateTimeChatBubble } from "../util/FunctionGlobal";
 import styles from './messageBubble.module.css'
 
 interface MessageBubbleProps {
-    message: TextMessage;
+    message: Message;
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = (props) => {

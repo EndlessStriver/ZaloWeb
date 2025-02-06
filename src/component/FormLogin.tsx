@@ -103,6 +103,7 @@ const FormLogin: React.FC = () => {
                 <button className={styles.buttonSubmit} disabled={loading} type='submit'>{loading ? "Đang xử lý..." : "Đăng nhập"}</button>
                 <Link to={"/forgot-password"}>Quên mật khẩu?</Link>
             </form>
+            <Link to="/auth/register">Đăng ký tài khoản</Link>
         </div>
     );
 }

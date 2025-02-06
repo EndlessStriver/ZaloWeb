@@ -48,7 +48,7 @@ const ChatPage: React.FC = () => {
         const id = setTimeout(async () => {
             if (await MyJwtIsExpired() === true) {
                 dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-                navigate("/login");
+                navigate("/auth/login");
                 return;
             }
             if (keyword) {

@@ -7,6 +7,13 @@
     margin-top: 20px;
 }
 
+.container a {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 14px;
+    font-style: italic;
+}
+
 .form {
     display: flex;
     flex-direction: column;
@@ -73,6 +80,7 @@
     text-decoration: none;
     padding: 14px;
     border-radius: 5px;
+    font-style: normal;
 }
 
 .form a:hover {

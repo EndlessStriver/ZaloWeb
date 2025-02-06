@@ -15,10 +15,10 @@ const getReceivedFriendRequests = async (): Promise<Friendship[]> => {
     return response.data.data
 }
 
-const checkFriendshipByPhoneNumber = async (phoneNumber: string): Promise<"NOT_FRIEND" | "FRIEND" | "REQUEST_SENT" | "REQUEST_RECEIVED" | "IS_YOU"> => {
+const checkFriendshipByFriendId = async (friendId: string): Promise<"NOT_FRIEND" | "FRIEND" | "REQUEST_SENT" | "REQUEST_RECEIVED" | "IS_YOU"> => {
     const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
     const accessToken = localStorage.getItem('accessToken');
-    const response = await axios.get(`${API_ENDPOINT}/friendships/check?phoneNumber=${phoneNumber}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+    const response = await axios.get(`${API_ENDPOINT}/friendships/check?friendId=${friendId}`, { headers: { Authorization: `Bearer ${accessToken}` } })
     return response.data.data
 }
 
@@ -43,4 +43,4 @@ const acceptFriendRequest = async (friendId: string): Promise<Friendship> => {
     return response.data.data
 }
 
-export { getFriendList, getReceivedFriendRequests, checkFriendshipByPhoneNumber, sendFriendRequest, cancelFriendship, acceptFriendRequest }
+export { getFriendList, getReceivedFriendRequests, checkFriendshipByFriendId, sendFriendRequest, cancelFriendship, acceptFriendRequest }
