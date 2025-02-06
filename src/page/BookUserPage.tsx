@@ -31,6 +31,8 @@ const BookUserPage: React.FC = () => {
     const { dispatch } = useContext(NotifyContext);
     const navigate = useNavigate();
 
+    const shareData = { setUser, setIsShowChatRoom }
+
     useEffect(() => {
         if (room || user) setIsShowChatRoom(true);
         if (!room && !user) setIsShowChatRoom(false);
@@ -115,7 +117,7 @@ const BookUserPage: React.FC = () => {
                             room={room}
                         />
                         :
-                        <Outlet />
+                        <Outlet context={shareData} />
                 }
             </div>
             {

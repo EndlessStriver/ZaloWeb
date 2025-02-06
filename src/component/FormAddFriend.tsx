@@ -139,6 +139,10 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
         }
     }
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') onSearch();
+    };
+
     return (
         <Overlay>
             <div className={styles.container}>
@@ -156,6 +160,7 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
                             placeholder="Số điện thoại"
                             value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value)}
+                            onKeyDown={handleKeyDown}
                         />
                     </div>
                     <span className={styles.error}>{error}</span>

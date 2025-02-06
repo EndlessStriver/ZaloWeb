@@ -10,9 +10,12 @@ import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import AvtDefault from '../../public/images/avt_default.png';
 import Account from '../interface/master-data/Account';
 import Overlay from './Overlay';
-import { useNavigate } from 'react-router';
+import { useNavigate, useOutletContext } from 'react-router';
+import User from '../interface/master-data/User';
 
 interface FriendProps {
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
+    setIsShowChatRoom: React.Dispatch<React.SetStateAction<boolean>>;
     friendShips: Friendship[];
     setFriendShips: React.Dispatch<React.SetStateAction<Friendship[]>>;
     friendShip: Friendship;
@@ -24,6 +27,11 @@ const ListFriend: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const { dispatch } = useContext(NotifyContext);
+
+    const { setUser, setIsShowChatRoom }: {
+        setUser: React.Dispatch<React.SetStateAction<User | null>>,
+        setIsShowChatRoom: React.Dispatch<React.SetStateAction<boolean>>
+    } = useOutletContext();
 
     useEffect(() => {
         const fetchFriendShips = async () => {
@@ -96,6 +104,8 @@ const ListFriend: React.FC = () => {
                                                         friendShip={friendShip}
                                                         friendShips={friendShips}
                                                         setFriendShips={setFriendShips}
+                                                        setIsShowChatRoom={setIsShowChatRoom}
+                                                        setUser={setUser}
                                                     />
                                                 ))
                                             }
@@ -109,7 +119,7 @@ const ListFriend: React.FC = () => {
     );
 }
 
-const Friend: React.FC<FriendProps> = ({ friendShip, friendShips, setFriendShips }) => {
+const Friend: React.FC<FriendProps> = ({ friendShip, friendShips, setFriendShips, setIsShowChatRoom, setUser }) => {
 
     const [showSubMenu, setShowSubMenu] = useState<boolean>(false);
     const [showModalDelete, setShowModalDelete] = useState<boolean>(false);
@@ -174,7 +184,13 @@ const Friend: React.FC<FriendProps> = ({ friendShip, friendShips, setFriendShips
                 {
                     showSubMenu ?
                         <div className={styles.subMenu}>
-                            <div className={styles.item}>
+                            <div
+                                className={styles.item}
+                                onClick={() => {
+                                    setUser(myUser.user.userId === friendShip.user.userId ? friendShip.friend : friendShip.user);
+                                    setIsShowChatRoom(true);
+                                }}
+                            >
                                 <span>Trò chuyện</span>
                             </div>
                             <div className={styles.item}>

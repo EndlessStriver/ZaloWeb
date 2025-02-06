@@ -2,4 +2,15 @@ interface RefreshToken {
     accessToken: string;
 }
 
-export type { RefreshToken }
+interface RegisterRequest {
+    firstName: string,
+    lastName: string,
+    gender: string,
+    birthday: string,
+    phoneNumber: string,
+    email: string,
+    username: string,
+    password: string,
+}
+
+export type { RefreshToken, RegisterRequest }

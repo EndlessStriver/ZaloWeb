@@ -9,6 +9,7 @@ import ListFriendInvitation from './component/ListFriendInvitation'
 import ListInvitationCommunityGroup from './component/ListInvitationCommunityGroup'
 import LoginRegisterPage from './page/LoginRegisterPage'
 import FormLogin from './component/FormLogin'
+import FormRegister from './component/FormRegister'
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
         <Route path="/auth" element={<LoginRegisterPage />} >
           <Route index element={<Navigate to="login" replace />} />
           <Route path="login" element={<FormLogin />} />
-          <Route path="register" element={<h1>Register</h1>} />
+          <Route path="register" element={<FormRegister />} />
         </Route>
         <Route path="/" element={<HomePage />}>
           <Route index element={<Navigate to="chat" replace />} />

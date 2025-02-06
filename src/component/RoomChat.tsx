@@ -100,7 +100,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
         }
 
         if (isCreateRoom) getMessageRoom();
-    }, [isCreateRoom]);
+    }, [isCreateRoom, roomInfo]);
 
     const onSendMessage = async () => {
         if (await MyJwtIsExpired() === true) {
