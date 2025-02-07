@@ -1,9 +1,10 @@
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import styles from './formRegister.module.css'
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { registerApi } from '../service/AuthService';
 import { NotifyContext } from '../context/NotifyContext';
+import { MyJwtIsExpired } from '../util/MyJwtDecode';
 
 const FormRegister: React.FC = () => {
 
@@ -29,8 +30,10 @@ const FormRegister: React.FC = () => {
         password: '',
         confirmPassword: ''
     })
+    const [isLoading, setIsLoading] = useState(false);
 
     const { dispatch } = useContext(NotifyContext);
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
@@ -43,19 +46,32 @@ const FormRegister: React.FC = () => {
         })
     }
 
+    useEffect(() => {
+        const checkTokenIsExpired = async () => {
+            if (await MyJwtIsExpired() === false) navigate('/');
+        }
+        checkTokenIsExpired();
+    }, [navigate]);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
         try {
+            setIsLoading(true);
+            e.preventDefault();
             if (formData.password !== formData.confirmPassword) {
                 setErrors({ ...errors, confirmPassword: "Mật khẩu không khớp" });
+                setIsLoading(false);
                 return;
             }
-            const response = await registerApi(formData);
-            console.log(response);
+            await registerApi(formData);
+            dispatch({ type: "success", payload: "Đăng kí thành công, vui lòng đăng nhập tài khoản để có thể sử dụng" });
+            navigate('/auth/login');
+            setIsLoading(false);
         } catch (error) {
+            console.log(error);
+            setIsLoading(false);
             if (axios.isAxiosError(error) && error.response) {
                 dispatch({ type: "error", payload: error.response.data.message });
-                setErrors(error.response.data.errors);
+                if (error.response.data.errors) setErrors(error.response.data.errors);
             } else {
                 dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
             }
@@ -75,6 +91,7 @@ const FormRegister: React.FC = () => {
                             placeholder='Nhập tên của bạn'
                             onChange={handleChange}
                             value={formData.firstName}
+                            disabled={isLoading}
                         />
                         <span className={styles.error}>{errors.firstName}</span>
                     </div>
@@ -88,6 +105,7 @@ const FormRegister: React.FC = () => {
                             placeholder='Nhập họ của bạn'
                             onChange={handleChange}
                             value={formData.lastName}
+                            disabled={isLoading}
                         />
                         <span className={styles.error}>{errors.lastName}</span>
                     </div>
@@ -99,6 +117,7 @@ const FormRegister: React.FC = () => {
                             id="gender"
                             onChange={handleChange}
                             value={formData.gender}
+                            disabled={isLoading}
                         >
                             <option value="">Chọn giới tính</option>
                             <option value={"MALE"}>Nam</option>
@@ -115,6 +134,7 @@ const FormRegister: React.FC = () => {
                             id="birthday"
                             onChange={handleChange}
                             value={formData.birthday}
+                            disabled={isLoading}
                         />
                         <span className={styles.error}>{errors.birthday}</span>
                     </div>
@@ -128,6 +148,7 @@ const FormRegister: React.FC = () => {
                             placeholder='Nhập số điện thoại của bạn'
                             onChange={handleChange}
                             value={formData.phoneNumber}
+                            disabled={isLoading}
                         />
                         <span className={styles.error}>{errors.phoneNumber}</span>
                     </div>
@@ -141,6 +162,7 @@ const FormRegister: React.FC = () => {
                             placeholder='Nhập email của bạn'
                             onChange={handleChange}
                             value={formData.email}
+                            disabled={isLoading}
                         />
                         <span className={styles.error}>{errors.email}</span>
                     </div>
@@ -154,6 +176,7 @@ const FormRegister: React.FC = () => {
                             placeholder='Nhập tên đăng nhập'
                             onChange={handleChange}
                             value={formData.username}
+                            disabled={isLoading}
                         />
                         <span className={styles.error}>{errors.username}</span>
                     </div>
@@ -167,6 +190,7 @@ const FormRegister: React.FC = () => {
                             placeholder='Nhập mật khẩu'
                             onChange={handleChange}
                             value={formData.password}
+                            disabled={isLoading}
                         />
                         <span className={styles.error}>{errors.password}</span>
                     </div>
@@ -180,11 +204,12 @@ const FormRegister: React.FC = () => {
                             placeholder='Nhập lại mật khẩu'
                             onChange={handleChange}
                             value={formData.confirmPassword}
+                            disabled={isLoading}
                         />
                         <span className={styles.error}>{errors.confirmPassword}</span>
                     </div>
                 </div>
-                <button className={styles.submitBtn} type="submit">Đăng kí</button>
+                <button className={styles.submitBtn} disabled={isLoading} type="submit">{isLoading ? "Đang xử lý..." : "Đăng kí"}</button>
             </form>
             <Link to="/auth/login">Đã có tài khoản? Đăng nhập</Link>
         </div>

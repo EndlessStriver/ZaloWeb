@@ -45,6 +45,12 @@ const FormLogin: React.FC = () => {
                     const response = await LoginApi(account.username, account.password);
                     localStorage.setItem('user', JSON.stringify(response));
                     localStorage.setItem('accessToken', response.accessToken);
+                    if (response.actived === false) {
+                        dispatch({ type: "error", payload: "Tài khoản của bạn chưa được xác thực, vui lòng xác thực tài khoản trước khi sử dụng" });
+                        setLoading(false);
+                        navigate('/auth/verify');
+                        return;
+                    }
                     navigate('/');
                     dispatch({ type: "success", payload: "Đăng nhập thành công" });
                     setLoading(false);
@@ -103,7 +109,7 @@ const FormLogin: React.FC = () => {
                 <button className={styles.buttonSubmit} disabled={loading} type='submit'>{loading ? "Đang xử lý..." : "Đăng nhập"}</button>
                 <Link to={"/forgot-password"}>Quên mật khẩu?</Link>
             </form>
-            <Link to="/auth/register">Đăng ký tài khoản</Link>
+            <Link to="/auth/register">Chưa có tài khoản? Đăng kí</Link>
         </div>
     );
 }

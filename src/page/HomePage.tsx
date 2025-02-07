@@ -9,13 +9,23 @@ import { LogoutApi } from '../service/AuthService';
 import { NotifyContext } from '../context/NotifyContext';
 import axios from 'axios';
 import SocketProvider from '../context/SocketContext';
+import Account from '../interface/master-data/Account';
 
 const HomePage: React.FC = () => {
 
     const navigate = useNavigate();
     const { dispatch } = useContext(NotifyContext);
+
+    const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
     const [showMenuItem, setShowMenuItem] = React.useState<boolean>(false);
     const subMenuContainerRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (myUser.verified === false) {
+            dispatch({ type: 'error', payload: 'Tài khoản của bạn chưa được xác thực, vui lòng xác thực tài khoản trước khi sử dụng' });
+            navigate('/auth/verify');
+        }
+    }, [])
 
     useEffect(() => {
         const checkTokenIsExpired = async () => {

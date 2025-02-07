@@ -20,10 +20,16 @@ const registerApi = async (formData: RegisterRequest): Promise<Account> => {
     return response.data.data
 }
 
+const sendOtpAPI = async (email: string): Promise<void> => {
+    const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
+    const accessToken = localStorage.getItem('accessToken');
+    await axios.post(`${API_ENDPOINT}/auth/send-otp`, { email }, { headers: { Authorization: `Bearer ${accessToken}` } })
+}
+
 const RefreshTokenApi = async (): Promise<RefreshToken> => {
     const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
     const response = await axios.get(`${API_ENDPOINT}/auth/refresh-token`, { withCredentials: true })
     return response.data.data
 }
 
-export { LoginApi, RefreshTokenApi, LogoutApi, registerApi }
+export { LoginApi, RefreshTokenApi, LogoutApi, registerApi, sendOtpAPI }
