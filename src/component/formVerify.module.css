@@ -1,3 +1,83 @@
+.account {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 400px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 5px 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    position: relative;
+}
+
+.account:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.account .icon.active {
+    animation: rotateHalf 0.5s ease-in-out forwards;
+}
+
+.account .icon.inActive {
+    animation: rotateHalfNext 0.5s ease-in-out forwards;
+}
+
+.account .avatar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    font-weight: 500;
+    color: gray;
+}
+
+.account .avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.account .subMenu {
+    display: block;
+    position: absolute;
+    width: 100%;
+    top: 110%;
+    right: 0;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+    z-index: 1;
+}
+
+.account .subMenu.active {
+    animation: shake 0.5s ease-in-out;
+}
+
+.account .subMenu.inActive {
+    display: none;
+}
+
+.account .subMenu .item {
+    padding: 10px;
+    color: gray;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+.account .subMenu .item:nth-child(3) {
+    color: red;
+}
+
+.account .subMenu .item:hover {
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -8,7 +88,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     padding: 25px;
-    margin-top: 30px;
+    margin-top: 20px;
     user-select: none;
 }
 
@@ -29,6 +109,10 @@
     font-size: 14px;
     align-self: flex-start;
     margin-bottom: 10px;
+}
+
+.container .error:nth-of-type(3) {
+    margin-top: 10px;
 }
 
 .container .emailGroup {
@@ -89,4 +173,37 @@
 .container .btnVerify:hover,
 .container .btnSend:hover {
     background-color: #2980b9;
+}
+
+@keyframes shake {
+    0% {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+}
+
+@keyframes rotateHalf {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotateHalfNext {
+    0% {
+        transform: rotate(180deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

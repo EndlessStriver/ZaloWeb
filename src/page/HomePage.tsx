@@ -48,6 +48,11 @@ const HomePage: React.FC = () => {
 
     const logout = async () => {
         try {
+            if (await MyJwtIsExpired()) {
+                dispatch({ type: "error", payload: "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại" });
+                navigate("/auth/login");
+                return;
+            }
             await LogoutApi();
             localStorage.removeItem('accessToken');
             navigate('/auth/login');
