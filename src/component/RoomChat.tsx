@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import styles from './roomChat.module.css'
 import AvtDefault from '../../public/images/avt_default.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -32,6 +32,8 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     const [messageSend, setMessageSend] = useState<string>("");
     const [roomInfo, setRoomInfo] = useState<ChatRoom>();
     const [isCreateRoom, setIsCreateRoom] = useState<boolean>(false);
+    const myBody = useRef<HTMLDivElement>(null);
+    const [pageOption, setPageOption] = useState({ currentPage: 0, totalPages: 10 });
     const [isLoadMessage, setIsLoadMessage] = useState<boolean>(false);
 
     useEffect(() => {
@@ -57,12 +59,12 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                     if (response) {
                         setIsCreateRoom(true);
                         setRoomInfo(response);
-                    } else {
-                        setIsCreateRoom(false);
                     }
-                } else if (props.room) {
-                    setIsCreateRoom(true);
-                    setRoomInfo(props.room);
+                } else {
+                    if (props.room) {
+                        setIsCreateRoom(true);
+                        setRoomInfo(props.room);
+                    }
                 }
             } catch (error) {
                 if (axios.isAxiosError(error) && error.response) {
@@ -73,7 +75,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
             }
         }
         getRoomInfo();
-    }, [props.user, props.room, dispatch, navigate]);
+    }, [props.user, props.room]);
 
     useEffect(() => {
         const getMessageRoom = async () => {
@@ -85,8 +87,9 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                 }
                 if (roomInfo) {
                     setIsLoadMessage(true);
-                    const response = await getMessagesByChatRoomId(roomInfo.chatRoomId, { orderBy: "asc" });
-                    setMessages(response.data);
+                    const response = await getMessagesByChatRoomId(roomInfo.chatRoomId, { orderBy: "desc", currentPage: 0 });
+                    setPageOption({ currentPage: response.currentPage, totalPages: response.totalPages });
+                    setMessages(response.data.reverse());
                     setIsLoadMessage(false);
                 }
             } catch (error) {
@@ -99,8 +102,8 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
             }
         }
 
-        if (isCreateRoom) getMessageRoom();
-    }, [isCreateRoom, roomInfo]);
+        if (roomInfo && isCreateRoom) getMessageRoom();
+    }, [roomInfo, isCreateRoom]);
 
     const onSendMessage = async () => {
         if (await MyJwtIsExpired() === true) {
@@ -136,9 +139,39 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
         }
     }
 
+    const loadMoreMessage = async () => {
+        try {
+            if (await MyJwtIsExpired() === true) {
+                dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+                navigate("/auth/login");
+                return;
+            }
+            if (roomInfo && pageOption.currentPage + 1 <= pageOption.totalPages) {
+                setIsLoadMessage(true);
+                const response = await getMessagesByChatRoomId(roomInfo.chatRoomId, { orderBy: "desc", currentPage: pageOption.currentPage + 1 });
+                setPageOption({ currentPage: response.currentPage, totalPages: response.totalPages });
+                setMessages([...response.data.reverse(), ...messages]);
+                setIsLoadMessage(false);
+            }
+        } catch (error) {
+            setIsLoadMessage(false);
+            if (axios.isAxiosError(error) && error.response) {
+                dispatch({ type: "error", payload: error.response.data.message });
+            } else {
+                dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+            }
+        }
+    }
+
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') onSendMessage();
     };
+
+    const scrollToTop = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
+        if (Math.abs(event.currentTarget.scrollTop) + event.currentTarget.clientHeight >= event.currentTarget.scrollHeight) {
+            loadMoreMessage();
+        }
+    }
 
     return (
         <div className={styles.container}>
@@ -154,8 +187,18 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                         }
                     </span>
                 </div>
+                {
+                    isLoadMessage &&
+                    <div className={styles.loadMoreMessage}>
+                        <p>Đang tải tin nhắn...</p>
+                    </div>
+                }
             </div>
-            <div className={styles.body}>
+            <div
+                ref={myBody}
+                className={styles.body}
+                onScroll={scrollToTop}
+            >
                 {
                     messages.slice().reverse().map((message) => (
                         <MessageBubble key={message.messageId} message={message} />

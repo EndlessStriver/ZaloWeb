@@ -1,11 +1,13 @@
 import React from 'react';
 import styles from './loginRegisterPage.module.css'
-import { Outlet } from 'react-router';
+import { Link, Outlet } from 'react-router';
 
 const LoginRegisterPage: React.FC = () => {
     return (
         <div className={styles.container}>
-            <h1><a className={styles.logo}></a></h1>
+            <Link to="/">
+                <h1><a className={styles.logo}></a></h1>
+            </Link>
             <h2 className={styles.lable}>
                 Đăng nhập tài khoản Zalo
                 <br />

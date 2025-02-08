@@ -29,16 +29,21 @@
 
 .chatItem .chatName {
     font-size: 16px;
-    color: #2e2e2e;
+    color: #5c5c5c;
     margin-bottom: 8px;
     font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .chatItem .content {
     font-size: 14px;
     font-weight: 400;
     color: gray;
-    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .chatItem .option {
