@@ -70,11 +70,6 @@ const FormVerify: React.FC = () => {
     const sendOtpToEmail = async () => {
         try {
             setIsSending(true);
-            if (await MyJwtIsExpired()) {
-                dispatch({ type: "error", payload: "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại" });
-                navigate("/auth/login");
-                return;
-            }
             await sendOtpAPI(formData.email);
             setCountDown(60);
             dispatch({ type: "success", payload: "Mã OTP đã được gửi tới Email của bạn" });

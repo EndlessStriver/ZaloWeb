@@ -107,7 +107,7 @@ const FormLogin: React.FC = () => {
                 </div>
                 <span className={styles.globalError}>{errors.password}</span>
                 <button className={styles.buttonSubmit} disabled={loading} type='submit'>{loading ? "Đang xử lý..." : "Đăng nhập"}</button>
-                <Link to={"/forgot-password"}>Quên mật khẩu?</Link>
+                <Link to={"/auth/forgot-password"}>Quên mật khẩu?</Link>
             </form>
             <Link to="/auth/register">Chưa có tài khoản? Đăng kí</Link>
         </div>

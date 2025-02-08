@@ -13,4 +13,11 @@ interface RegisterRequest {
     password: string,
 }
 
-export type { RefreshToken, RegisterRequest }
+interface ForgotPasswordRequest {
+    email: string;
+    otp: string;
+    password: string;
+    confirmPassword: string;
+}
+
+export type { RefreshToken, RegisterRequest, ForgotPasswordRequest }

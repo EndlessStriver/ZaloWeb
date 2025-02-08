@@ -1,6 +1,6 @@
 import axios from "axios"
 import Account from "../interface/master-data/Account"
-import { RefreshToken, RegisterRequest } from "../interface/api/AuthService";
+import { ForgotPasswordRequest, RefreshToken, RegisterRequest } from "../interface/api/AuthService";
 
 const LoginApi = async (username: string, password: string): Promise<Account> => {
     const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
@@ -22,8 +22,7 @@ const registerApi = async (formData: RegisterRequest): Promise<Account> => {
 
 const sendOtpAPI = async (email: string): Promise<void> => {
     const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
-    const accessToken = localStorage.getItem('accessToken');
-    await axios.post(`${API_ENDPOINT}/auth/send-otp`, { email }, { headers: { Authorization: `Bearer ${accessToken}` } })
+    await axios.post(`${API_ENDPOINT}/auth/send-otp`, { email })
 }
 
 const verifyOtp = async (data: { otp: string, email: string }): Promise<void> => {
@@ -38,4 +37,11 @@ const RefreshTokenApi = async (): Promise<RefreshToken> => {
     return response.data.data
 }
 
-export { LoginApi, RefreshTokenApi, LogoutApi, registerApi, sendOtpAPI, verifyOtp }
+const ForgotPasswordApi = async (data: ForgotPasswordRequest): Promise<void> => {
+    const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
+    const accessToken = localStorage.getItem('accessToken');
+    const response = await axios.patch(`${API_ENDPOINT}/auth/forgot-password`, data, { headers: { Authorization: `Bearer ${accessToken}` } })
+    return response.data.data
+}
+
+export { LoginApi, RefreshTokenApi, LogoutApi, registerApi, sendOtpAPI, verifyOtp, ForgotPasswordApi }
