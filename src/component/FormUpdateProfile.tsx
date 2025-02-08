@@ -1,23 +1,25 @@
-import { Link, useNavigate } from 'react-router';
-import styles from './formRegister.module.css'
-import { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
-import { registerApi } from '../service/AuthService';
-import { NotifyContext } from '../context/NotifyContext';
-import { MyJwtIsExpired } from '../util/MyJwtDecode';
+import { useContext, useEffect, useState } from "react";
+import { MyJwtIsExpired } from "../util/MyJwtDecode";
+import { NotifyContext } from "../context/NotifyContext";
+import { useNavigate } from "react-router";
+import styles from './formUpdateProfile.module.css'
+import Account from "../interface/master-data/Account";
+import { updateProfileVerify } from "../service/UserService";
+import axios from "axios";
+import { UpdateProfileVerifyProps } from "../interface/api/UserService";
 
-const FormRegister: React.FC = () => {
+const FormUpdateProfile: React.FC = () => {
 
-    const [formData, setFormData] = useState({
+    const { dispatch } = useContext(NotifyContext);
+    const navigate = useNavigate();
+    const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
+    const [formData, setFormData] = useState<UpdateProfileVerifyProps>({
         firstName: '',
         lastName: '',
         gender: '',
         birthday: '',
         phoneNumber: '',
         email: '',
-        username: '',
-        password: '',
-        confirmPassword: ''
     })
     const [errors, setErrors] = useState({
         firstName: '',
@@ -26,14 +28,8 @@ const FormRegister: React.FC = () => {
         birthday: '',
         phoneNumber: '',
         email: '',
-        username: '',
-        password: '',
-        confirmPassword: ''
     })
     const [isLoading, setIsLoading] = useState(false);
-
-    const { dispatch } = useContext(NotifyContext);
-    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
@@ -47,24 +43,39 @@ const FormRegister: React.FC = () => {
     }
 
     useEffect(() => {
-        const checkTokenIsExpired = async () => {
-            if (await MyJwtIsExpired() === false) navigate('/');
-        }
-        checkTokenIsExpired();
-    }, [navigate]);
+        if (myUser) setFormData({
+            ...formData,
+            firstName: myUser.user.firstName,
+            lastName: myUser.user.lastName,
+            gender: myUser.user.gender,
+            birthday: myUser.user.birthday,
+            phoneNumber: myUser.user.phoneNumber,
+            email: myUser.user.email
+        });
+    }, [])
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    useEffect(() => {
+        const checkSession = async () => {
+            if (await MyJwtIsExpired()) {
+                dispatch({ type: "error", payload: "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại" });
+                navigate("/auth/login");
+            }
+        }
+        checkSession();
+    }, []);
+
+    const onUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         try {
             setIsLoading(true);
-            e.preventDefault();
-            if (formData.password !== formData.confirmPassword) {
-                setErrors({ ...errors, confirmPassword: "Mật khẩu không khớp" });
-                setIsLoading(false);
-                return;
+            if (await MyJwtIsExpired()) {
+                dispatch({ type: "error", payload: "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại" });
+                navigate("/auth/login");
             }
-            await registerApi(formData);
-            dispatch({ type: "success", payload: "Đăng kí thành công, vui lòng đăng nhập tài khoản để có thể sử dụng" });
-            navigate('/auth/login');
+            const response = await updateProfileVerify(formData);
+            dispatch({ type: "success", payload: "Cập nhật thông tin tài khoản thành công" });
+            localStorage.setItem("user", JSON.stringify({ ...myUser, user: response }));
+            navigate('/');
             setIsLoading(false);
         } catch (error) {
             setIsLoading(false);
@@ -79,8 +90,8 @@ const FormRegister: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <h1>Đăng kí</h1>
-            <form onSubmit={handleSubmit}>
+            <h1>Thông tin tài khoản</h1>
+            <form onSubmit={onUpload}>
                 <div className={styles.formGroup}>
                     <label htmlFor="firstName">Tên</label>
                     <div className={styles.inputGroup}>
@@ -166,53 +177,26 @@ const FormRegister: React.FC = () => {
                         <span className={styles.error}>{errors.email}</span>
                     </div>
                 </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="username">Tên đăng nhập</label>
-                    <div className={styles.inputGroup}>
-                        <input
-                            type="text"
-                            id="username"
-                            placeholder='Nhập tên đăng nhập'
-                            onChange={handleChange}
-                            value={formData.username}
-                            disabled={isLoading}
-                        />
-                        <span className={styles.error}>{errors.username}</span>
-                    </div>
+                <div className={styles.btnGroup}>
+                    <button
+                        type="button"
+                        className={styles.btnCancel}
+                        disabled={isLoading}
+                        onClick={() => navigate('/')}
+                    >
+                        Hủy
+                    </button>
+                    <button
+                        type="submit"
+                        className={styles.btnSubmit}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? "Đang cập nhật..." : "Cập nhật"}
+                    </button>
                 </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="password">Mật khẩu</label>
-                    <div className={styles.inputGroup}>
-                        <input
-                            type="password"
-                            id="password"
-                            placeholder='Nhập mật khẩu'
-                            onChange={handleChange}
-                            value={formData.password}
-                            disabled={isLoading}
-                        />
-                        <span className={styles.error}>{errors.password}</span>
-                    </div>
-                </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="confirmPassword">Nhập lại mật khẩu</label>
-                    <div className={styles.inputGroup}>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            placeholder='Nhập lại mật khẩu'
-                            onChange={handleChange}
-                            value={formData.confirmPassword}
-                            disabled={isLoading}
-                        />
-                        <span className={styles.error}>{errors.confirmPassword}</span>
-                    </div>
-                </div>
-                <button className={styles.submitBtn} disabled={isLoading} type="submit">{isLoading ? "Đang xử lý..." : "Đăng kí"}</button>
             </form>
-            <Link to="/auth/login">Đã có tài khoản? Đăng nhập</Link>
         </div>
-    )
+    );
 }
 
-export default FormRegister;
+export default FormUpdateProfile;

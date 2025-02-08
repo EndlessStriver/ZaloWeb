@@ -1,0 +1,117 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 500px;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    margin-top: 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+.container:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.container h1 {
+    font-weight: 700;
+    color: #3498db;
+    margin-bottom: 10px;
+}
+
+.container a {
+    font-size: 14px;
+    color: #3498db;
+    text-decoration: none;
+    transition: 0.3s;
+    font-style: italic;
+}
+
+.container form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 20px 0;
+}
+
+.container form .formGroup {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    gap: 15px;
+}
+
+.container form .formGroup label {
+    font-size: 16px;
+    font-weight: 600;
+    color: gray;
+    flex-basis: 30%;
+    text-align: right;
+}
+
+.container form .formGroup input,
+.container form .formGroup select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.container form .formGroup input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.container form .formGroup .inputGroup {
+    flex-basis: 65%;
+}
+
+.container form .formGroup .inputGroup .error {
+    display: inline-block;
+    color: red;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 5px;
+}
+
+.container .btnGroup {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.container .btnGroup .btnCancel {
+    padding: 10px 20px;
+    background: #e74c3c;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.container .btnGroup .btnCancel:hover {
+    background: #c0392b;
+}
+
+.container .btnGroup .btnSubmit {
+    padding: 10px 20px;
+    background: #3498db;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.container .btnGroup .btnSubmit:hover {
+    background: #2980b9;
+}

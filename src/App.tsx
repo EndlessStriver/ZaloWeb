@@ -11,6 +11,7 @@ import LoginRegisterPage from './page/LoginRegisterPage'
 import FormLogin from './component/FormLogin'
 import FormRegister from './component/FormRegister'
 import FormVerify from './component/FormVerify'
+import FormUpdateProfile from './component/FormUpdateProfile'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="login" element={<FormLogin />} />
           <Route path="register" element={<FormRegister />} />
           <Route path="verify" element={<FormVerify />} />
+          <Route path="profile-update" element={<FormUpdateProfile />} />
         </Route>
         <Route path="/" element={<HomePage />}>
           <Route index element={<Navigate to="chat" replace />} />

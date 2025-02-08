@@ -4,7 +4,7 @@ interface User {
     lastName: string;
     gender: "MALE" | "FEMALE";
     birthday: string;
-    phoneNumber: string | null;
+    phoneNumber: string;
     email: string;
     bio: string | null;
     avatarUrl: string | null;

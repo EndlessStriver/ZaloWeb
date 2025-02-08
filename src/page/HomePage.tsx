@@ -21,13 +21,6 @@ const HomePage: React.FC = () => {
     const subMenuContainerRef = React.useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (myUser.verified === false) {
-            dispatch({ type: 'error', payload: 'Tài khoản của bạn chưa được xác thực, vui lòng xác thực tài khoản trước khi sử dụng' });
-            navigate('/auth/verify');
-        }
-    }, [])
-
-    useEffect(() => {
         const checkTokenIsExpired = async () => {
             if (await MyJwtIsExpired() === true) {
                 navigate('/auth/login');
@@ -35,6 +28,10 @@ const HomePage: React.FC = () => {
         }
         checkTokenIsExpired();
     }, [navigate, dispatch]);
+
+    useEffect(() => {
+        if (myUser && myUser.verified === false) navigate('/auth/verify');
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -55,6 +52,7 @@ const HomePage: React.FC = () => {
             }
             await LogoutApi();
             localStorage.removeItem('accessToken');
+            localStorage.removeItem('user');
             navigate('/auth/login');
             dispatch({ type: 'success', payload: 'Đăng xuất thành công' });
         } catch (error) {

@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './formVerify.module.css'
 import { faAngleUp, faArrowRight, faEllipsis } from '@fortawesome/free-solid-svg-icons';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { LogoutApi, sendOtpAPI, verifyOtp } from '../service/AuthService';
 import axios from 'axios';
 import { NotifyContext } from '../context/NotifyContext';
@@ -28,6 +28,17 @@ const FormVerify: React.FC = () => {
     const [isVerifying, setIsVerifying] = useState(false);
     const [countDown, setCountDown] = useState(0);
     const [isShowSubMenu, setIsShowSubMenu] = useState(false);
+    const myMenu = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const checkSession = async () => {
+            if (await MyJwtIsExpired()) {
+                dispatch({ type: "error", payload: "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại" });
+                navigate("/auth/login");
+            }
+        }
+        checkSession();
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -35,6 +46,14 @@ const FormVerify: React.FC = () => {
         }, 1000);
         return () => clearInterval(interval);
     }, [countDown]);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (myMenu.current && !myMenu.current.contains(e.target as Node)) setIsShowSubMenu(false);
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +70,11 @@ const FormVerify: React.FC = () => {
     const sendOtpToEmail = async () => {
         try {
             setIsSending(true);
-            if (await MyJwtIsExpired()) return dispatch({ type: "error", payload: "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại" });
+            if (await MyJwtIsExpired()) {
+                dispatch({ type: "error", payload: "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại" });
+                navigate("/auth/login");
+                return;
+            }
             await sendOtpAPI(formData.email);
             setCountDown(60);
             dispatch({ type: "success", payload: "Mã OTP đã được gửi tới Email của bạn" });
@@ -80,7 +103,6 @@ const FormVerify: React.FC = () => {
             navigate("/");
             setIsVerifying(false);
         } catch (error) {
-            console.log(error);
             setIsVerifying(false);
             if (axios.isAxiosError(error) && error.response) {
                 dispatch({ type: "error", payload: error.response.data.message });
@@ -100,6 +122,7 @@ const FormVerify: React.FC = () => {
             }
             await LogoutApi();
             localStorage.removeItem('accessToken');
+            localStorage.removeItem('user');
             navigate('/auth/login');
             dispatch({ type: 'success', payload: 'Đăng xuất thành công' });
         } catch (error) {
@@ -115,18 +138,24 @@ const FormVerify: React.FC = () => {
     return (
         <>
             <div
+                ref={myMenu}
                 onClick={() => setIsShowSubMenu(!isShowSubMenu)}
                 className={styles.account}
             >
                 <div className={styles.avatar}>
                     <img src={myUser.user.avatarUrl || avtDefault} alt="Ảnh đại diện" />
-                    <p>Ngô Thiên Phú</p>
+                    <p>{`${myUser.user.lastName} ${myUser.user.firstName}`}</p>
                 </div>
                 <div className={`${styles.icon} ${isShowSubMenu ? styles.active : styles.inActive}`}>
                     <FontAwesomeIcon icon={faAngleUp} />
                 </div>
                 <div className={`${styles.subMenu} ${isShowSubMenu ? styles.active : styles.inActive}`}>
-                    <p className={styles.item}>Thông tin cá nhân</p>
+                    <p
+                        onClick={() => navigate('/auth/profile-update')}
+                        className={styles.item}
+                    >
+                        Thông tin cá nhân
+                    </p>
                     <p className={styles.item}>Đổi mật khẩu</p>
                     <p
                         onClick={logout}
