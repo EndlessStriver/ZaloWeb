@@ -15,10 +15,13 @@ import { useNavigate } from 'react-router'
 import Message from '../interface/master-data/Message'
 import MessageBubble from './MessageBubble'
 import { getMessagesByChatRoomId } from '../service/MessageService'
+import Profile from './Profile'
 
 interface RoomChatProps {
     user: User | null;
     room: ChatRoom | null;
+    setIsShowChatRoom: React.Dispatch<React.SetStateAction<boolean>>;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const RoomChat: React.FC<RoomChatProps> = (props) => {
@@ -35,6 +38,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     const myBody = useRef<HTMLDivElement>(null);
     const [pageOption, setPageOption] = useState({ currentPage: 0, totalPages: 10 });
     const [isLoadMessage, setIsLoadMessage] = useState<boolean>(false);
+    const [isShowProfile, setIsShowProfile] = useState<boolean>(false);
 
     useEffect(() => {
         if (socket && roomInfo) {
@@ -180,7 +184,10 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <div className={styles.headerLeft}>
+                <div
+                    onClick={() => setIsShowProfile(true)}
+                    className={styles.headerLeft}
+                >
                     <div className={styles.headerLeftAvatar}>
                         <img src={AvtDefault} alt="avatar" />
                     </div>
@@ -233,6 +240,16 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                     </button>
                 </div>
             </div>
+            {
+                isShowProfile && props.user &&
+                <Profile
+                    user={props.user}
+                    isShowProfile={isShowProfile}
+                    setIsShowProfile={setIsShowProfile}
+                    setIsShowChatRoom={props.setIsShowChatRoom}
+                    setUser={props.setUser}
+                />
+            }
         </div>
     )
 }

@@ -115,6 +115,8 @@ const ChatPage: React.FC = () => {
                     <RoomChat
                         user={user}
                         room={room}
+                        setUser={setUser}
+                        setIsShowChatRoom={setIsShowChatRoom}
                     />
                 }
             </div>
