@@ -20,6 +20,7 @@ interface ProfileProps {
     setIsShowProfile: React.Dispatch<React.SetStateAction<boolean>>;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
     setIsShowChatRoom: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsShowFormAddFriend?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Profile: React.FC<ProfileProps> = (props) => {
@@ -122,9 +123,11 @@ const Profile: React.FC<ProfileProps> = (props) => {
         }
     }
 
-    const onShowProfile = () => {
+    const onShowChatRoom = () => {
         props.setUser(props.user);
-        props.setIsShowProfile(true);
+        props.setIsShowChatRoom(true);
+        props.setIsShowProfile(false);
+        if (props.setIsShowFormAddFriend) props.setIsShowFormAddFriend(false);
     }
 
     return (
@@ -183,7 +186,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
                             </button>
                         }
                         <button
-                            onClick={onShowProfile}
+                            onClick={onShowChatRoom}
                             className={styles.chat}
                         >
                             Nhắn tin

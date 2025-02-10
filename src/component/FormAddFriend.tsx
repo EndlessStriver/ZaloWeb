@@ -13,10 +13,13 @@ import { MyJwtIsExpired } from '../util/MyJwtDecode';
 import { useNavigate } from 'react-router';
 import { acceptFriendRequest, cancelFriendship, checkFriendshipByFriendId, sendFriendRequest } from '../service/FriendShipService';
 import { SocketContext } from '../context/SocketContext';
+import Profile from './Profile';
 
 interface FormAddFriendProps {
     isShow: boolean;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsShowChatRoom: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
@@ -25,6 +28,8 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
     const { dispatch } = useContext(NotifyContext);
     const socket = useContext(SocketContext);
 
+    const [isShowProfile, setIsShowProfile] = useState<boolean>(false);
+    const [userProfile, setUserProfile] = useState<User | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [friendType, setFriendType] = useState<"NOT_FRIEND" | "FRIEND" | "REQUEST_SENT" | "REQUEST_RECEIVED" | "IS_YOU">("IS_YOU");
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -177,7 +182,13 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
                             <span>Kết quả tìm kiếm</span>
                             <div className={styles.result}>
                                 <div className={styles.resultItem}>
-                                    <div className={styles.info}>
+                                    <div
+                                        onClick={() => {
+                                            setUserProfile(user);
+                                            setIsShowProfile(true);
+                                        }}
+                                        className={styles.info}
+                                    >
                                         <img src={user?.avatarUrl ? user.avatarUrl : "../public/images/avt_default.png"} alt="avatar" />
                                         <span>{user.firstName + " " + user.lastName}</span>
                                     </div>
@@ -243,6 +254,17 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
                     <button onClick={() => props.setShow(false)}>Hủy</button>
                     <button onClick={() => onSearch()} disabled={loading}>{loading ? "Đang tìm..." : "Tìm kiếm"}</button>
                 </div>
+                {
+                    isShowProfile && userProfile &&
+                    <Profile
+                        user={userProfile}
+                        isShowProfile={isShowProfile}
+                        setIsShowProfile={setIsShowProfile}
+                        setIsShowChatRoom={props.setIsShowChatRoom}
+                        setUser={props.setUser}
+                        setIsShowFormAddFriend={props.setShow}
+                    />
+                }
             </div>
         </Overlay>
     )

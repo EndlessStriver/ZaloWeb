@@ -123,6 +123,8 @@ const ChatPage: React.FC = () => {
                 <FormAddFriend
                     isShow={isShowFormAddFriend}
                     setShow={setIsShowFormAddFriend}
+                    setIsShowChatRoom={setIsShowChatRoom}
+                    setUser={setUser}
                 />
             }
         </div>
