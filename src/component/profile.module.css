@@ -1,0 +1,172 @@
+.container {
+    width: 400px;
+    min-height: 500px;
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    font-family: 'Poppins', sans-serif;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.container .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 5px 0;
+    color: #333;
+}
+
+.header button {
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 5px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.header button:hover {
+    background-color: #f0f0f0;
+}
+
+.background {
+    width: 100%;
+    height: 200px;
+    background-color: #f5f5f5;
+    margin-bottom: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.profile .avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid rgb(180, 180, 180);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.profile .avatar:hover {
+    transform: scale(1.1);
+}
+
+.profile .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile .fullName {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.option {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.option button {
+    padding: 10px 20px;
+    flex: 1;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+}
+
+.option button.addFriend {
+    background-color: rgb(240, 240, 240);
+    color: #444;
+}
+
+.option button.addFriend:hover {
+    background-color: rgb(224, 224, 224);
+}
+
+.option button.acceptFriend {
+    background-color: #00a74c;
+    color: white;
+}
+
+.option button.acceptFriend:hover {
+    background-color: #008f42;
+}
+
+.option button.cancelFriend {
+    background-color: #ff3d00;
+    color: white;
+}
+
+.option button.cancelFriend:hover {
+    background-color: #cc3700;
+}
+
+.option button.chat {
+    background-color: #0068ff;
+    color: white;
+}
+
+.option button.chat:hover {
+    background-color: #0051cc;
+}
+
+.detail {
+    margin-top: 25px;
+}
+
+.detail .lable {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+.detail .content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.detail .content p {
+    font-size: 14px;
+    color: #555;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}

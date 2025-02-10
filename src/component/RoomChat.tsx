@@ -59,6 +59,9 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                     if (response) {
                         setIsCreateRoom(true);
                         setRoomInfo(response);
+                    } else {
+                        setIsCreateRoom(false);
+                        setMessages([]);
                     }
                 } else {
                     if (props.room) {
@@ -103,6 +106,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
         }
 
         if (roomInfo && isCreateRoom) getMessageRoom();
+
     }, [roomInfo, isCreateRoom]);
 
     const onSendMessage = async () => {

@@ -12,8 +12,12 @@ import Account from '../interface/master-data/Account';
 import Overlay from './Overlay';
 import { useNavigate, useOutletContext } from 'react-router';
 import User from '../interface/master-data/User';
+import Profile from './Profile';
 
 interface FriendProps {
+    setUserProfile: React.Dispatch<React.SetStateAction<User | null>>;
+    setIsShowProfile: React.Dispatch<React.SetStateAction<boolean>>;
+    showProfile: boolean;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
     setIsShowChatRoom: React.Dispatch<React.SetStateAction<boolean>>;
     friendShips: Friendship[];
@@ -25,6 +29,8 @@ const ListFriend: React.FC = () => {
 
     const [friendShips, setFriendShips] = useState<Friendship[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [isShowProfile, setIsShowProfile] = useState<boolean>(false);
+    const [userProfile, setUserProfile] = useState<User | null>(null);
 
     const { dispatch } = useContext(NotifyContext);
 
@@ -101,11 +107,14 @@ const ListFriend: React.FC = () => {
                                                 friendShips.map((friendShip) => (
                                                     <Friend
                                                         key={friendShip.friendShipId}
+                                                        setIsShowProfile={setIsShowProfile}
+                                                        showProfile={isShowProfile}
                                                         friendShip={friendShip}
                                                         friendShips={friendShips}
                                                         setFriendShips={setFriendShips}
                                                         setIsShowChatRoom={setIsShowChatRoom}
                                                         setUser={setUser}
+                                                        setUserProfile={setUserProfile}
                                                     />
                                                 ))
                                             }
@@ -115,11 +124,21 @@ const ListFriend: React.FC = () => {
                         </>
                 }
             </div>
+            {
+                isShowProfile && userProfile &&
+                <Profile
+                    user={userProfile}
+                    isShowProfile={isShowProfile}
+                    setIsShowProfile={setIsShowProfile}
+                    setIsShowChatRoom={setIsShowChatRoom}
+                    setUser={setUser}
+                />
+            }
         </div>
     );
 }
 
-const Friend: React.FC<FriendProps> = ({ friendShip, friendShips, setFriendShips, setIsShowChatRoom, setUser }) => {
+const Friend: React.FC<FriendProps> = (props) => {
 
     const [showSubMenu, setShowSubMenu] = useState<boolean>(false);
     const [showModalDelete, setShowModalDelete] = useState<boolean>(false);
@@ -151,7 +170,7 @@ const Friend: React.FC<FriendProps> = ({ friendShip, friendShips, setFriendShips
             await cancelFriendship(friendId);
             dispatch({ type: "success", payload: "Xóa bạn bè thành công" });
             setShowModalDelete(false);
-            setFriendShips(friendShips.filter(f => f.friendShipId !== friendShipId));
+            props.setFriendShips(props.friendShips.filter(f => f.friendShipId !== friendShipId));
             setLoadingAcceptFriend(false);
         } catch (error) {
             setLoadingAcceptFriend(false);
@@ -163,19 +182,27 @@ const Friend: React.FC<FriendProps> = ({ friendShip, friendShips, setFriendShips
         }
     }
 
+    const onShowProfile = () => {
+        props.setUserProfile(myUser.user.userId === props.friendShip.user.userId ? props.friendShip.friend : props.friendShip.user);
+        props.setIsShowProfile(true);
+    }
+
     return (
-        <div key={friendShip.friendShipId} className={styles.friend}>
-            <div className={styles.info}>
+        <div className={styles.friend} >
+            <div
+                onClick={onShowProfile}
+                className={styles.info}
+            >
                 <img src={
-                    myUser.user.userId === friendShip.user.userId
-                        ? friendShip.friend.avatarUrl || AvtDefault
-                        : friendShip.user.avatarUrl || AvtDefault
+                    myUser.user.userId === props.friendShip.user.userId
+                        ? props.friendShip.friend.avatarUrl || AvtDefault
+                        : props.friendShip.user.avatarUrl || AvtDefault
                 } alt="avatar" />
                 <span className={styles.name}>
                     {
-                        myUser.user.userId === friendShip.user.userId
-                            ? `${friendShip.friend.firstName}  ${friendShip.friend.lastName}`
-                            : `${friendShip.user.firstName}  ${friendShip.user.lastName}`
+                        myUser.user.userId === props.friendShip.user.userId
+                            ? `${props.friendShip.friend.firstName}  ${props.friendShip.friend.lastName}`
+                            : `${props.friendShip.user.firstName}  ${props.friendShip.user.lastName}`
                     }
                 </span>
             </div>
@@ -187,8 +214,8 @@ const Friend: React.FC<FriendProps> = ({ friendShip, friendShips, setFriendShips
                             <div
                                 className={styles.item}
                                 onClick={() => {
-                                    setUser(myUser.user.userId === friendShip.user.userId ? friendShip.friend : friendShip.user);
-                                    setIsShowChatRoom(true);
+                                    props.setUser(myUser.user.userId === props.friendShip.user.userId ? props.friendShip.friend : props.friendShip.user);
+                                    props.setIsShowChatRoom(true);
                                 }}
                             >
                                 <span>Trò chuyện</span>
@@ -228,7 +255,7 @@ const Friend: React.FC<FriendProps> = ({ friendShip, friendShips, setFriendShips
                                 Không
                             </button>
                             <button
-                                onClick={() => onCancelFriendShip(myUser.user.userId === friendShip.user.userId ? friendShip.friend.userId : friendShip.user.userId, friendShip.friendShipId)}
+                                onClick={() => onCancelFriendShip(myUser.user.userId === props.friendShip.user.userId ? props.friendShip.friend.userId : props.friendShip.user.userId, props.friendShip.friendShipId)}
                                 className={styles.confirm}
                                 disabled={loadingAcceptFriend}
                             >

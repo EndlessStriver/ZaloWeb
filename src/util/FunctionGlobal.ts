@@ -10,4 +10,14 @@ function formatDateTimeChatBubble(dateStr: string): string {
     return `${hours}:${minutes} ${day}/${month}/${year}`;
 }
 
-export { formatDateTimeChatBubble };
+function formatDate(dateStr: string): string {
+    const date = new Date(dateStr);
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+}
+
+export { formatDateTimeChatBubble, formatDate };

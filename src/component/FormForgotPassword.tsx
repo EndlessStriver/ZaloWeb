@@ -157,7 +157,7 @@ const FormForgotPassword: React.FC = () => {
                     <label htmlFor="password">Mật khẩu mới</label>
                     <input
                         className={styles.input}
-                        type="text"
+                        type="password"
                         id="password"
                         placeholder="Mật khẩu mới"
                         value={formData.password}
@@ -169,7 +169,7 @@ const FormForgotPassword: React.FC = () => {
                     <label htmlFor="confirmPassword">Nhập lại mật khẩu mới</label>
                     <input
                         className={styles.input}
-                        type="text"
+                        type="password"
                         id="confirmPassword"
                         placeholder="Nhập lại mật khẩu mới"
                         value={formData.confirmPassword}

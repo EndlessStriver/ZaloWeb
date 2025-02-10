@@ -61,7 +61,6 @@ const FormAddFriend: React.FC<FormAddFriendProps> = (props) => {
                 return;
             }
             const myFriendType = await checkFriendshipByFriendId(friendUser.userId);
-            console.log(myFriendType);
             setFriendType(myFriendType);
             setUser(friendUser);
             setLoading(false);
