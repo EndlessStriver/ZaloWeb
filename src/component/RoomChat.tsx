@@ -14,7 +14,7 @@ import { MyJwtIsExpired } from '../util/MyJwtDecode'
 import { useNavigate } from 'react-router'
 import Message from '../interface/master-data/Message'
 import MessageBubble from './MessageBubble'
-import { createImageMessage, getMessagesByChatRoomId } from '../service/MessageService'
+import { createImageMessage, createTextMessage, getMessagesByChatRoomId } from '../service/MessageService'
 import Profile from './Profile'
 
 interface RoomChatProps {
@@ -159,7 +159,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                     const response = await createSingleChatRoom(props.user.userId);
                     setIsCreateRoom(true);
                     setRoomInfo(response);
-                    if (socket) socket.publish({ destination: "/app/chat/send", headers: { senderId: myUser.user.userId, chatRoomId: response.chatRoomId }, body: messageSend });
+                    await createTextMessage(response.chatRoomId, messageSend);
                     setMessageSend("");
                 } catch (error) {
                     if (axios.isAxiosError(error) && error.response) {
@@ -171,8 +171,16 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
             }
         } else {
             if (roomInfo && socket) {
-                socket.publish({ destination: "/app/chat/send", headers: { senderId: myUser.user.userId, chatRoomId: roomInfo.chatRoomId }, body: messageSend });
-                setMessageSend("");
+                try {
+                    await createTextMessage(roomInfo.chatRoomId, messageSend);
+                    setMessageSend("");
+                } catch (error) {
+                    if (axios.isAxiosError(error) && error.response) {
+                        dispatch({ type: "error", payload: error.response.data.message });
+                    } else {
+                        dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+                    }
+                }
             }
         }
     }

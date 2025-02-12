@@ -30,4 +30,12 @@ const createImageMessage = async (chatRoomId: string, image: File): Promise<Mess
     return response.data.data
 }
 
-export { getMessagesByChatRoomId, createImageMessage }
+const createTextMessage = async (chatRoomId: string, content: string): Promise<Message> => {
+    const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
+    const accessToken = localStorage.getItem('accessToken');
+
+    const response = await axios.post(`${API_ENDPOINT}/messages/text?chatRoomId=${chatRoomId}&content=${content}`, null, { headers: { Authorization: `Bearer ${accessToken}` } });
+    return response.data.data
+}
+
+export { getMessagesByChatRoomId, createImageMessage, createTextMessage }
