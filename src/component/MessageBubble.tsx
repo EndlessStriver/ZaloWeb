@@ -13,8 +13,13 @@ const MessageBubble: React.FC<MessageBubbleProps> = (props) => {
 
     return (
         <div className={`${props.message.user.userId === myUser.user.userId ? styles.myMessage : styles.friendMessage} ${styles.messageBubble}`}>
-            <span className={styles.content}>{props.message.content}</span>
-            <span className={styles.timestamp}>{formatDateTimeChatBubble(props.message.timestamp)}</span>
+            {
+                props.message.content && <p className={styles.content}>{props.message.content}</p>
+            }
+            {
+                props.message.imageUrl && <img src={props.message.imageUrl} alt="image" loading="lazy" className={styles.image} />
+            }
+            <p className={styles.timestamp}>{formatDateTimeChatBubble(props.message.timestamp)}</p>
         </div>
     )
 }

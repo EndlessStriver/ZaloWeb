@@ -94,6 +94,7 @@ const FormVerify: React.FC = () => {
                 return;
             }
             await verifyOtp(formData);
+            localStorage.setItem('user', JSON.stringify({ ...myUser, isVerified: true }));
             dispatch({ type: "success", payload: "Xác thực tài khoản thành công" });
             navigate("/");
             setIsVerifying(false);

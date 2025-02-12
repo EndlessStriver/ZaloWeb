@@ -26,6 +26,11 @@
     color: #000000;
 }
 
+.image {
+    height: 300px;
+    object-fit: cover;
+}
+
 .messageBubble.myMessage .content {
     align-items: flex-end;
 }

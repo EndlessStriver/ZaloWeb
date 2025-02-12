@@ -20,7 +20,14 @@
     user-select: none;
 }
 
-.header .loadMoreMessage {
+.header .sendingImage {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.header .loadMoreMessage,
+.header .sendingImage {
     position: absolute;
     padding: 10px;
     background-color: #ffffff;
@@ -152,4 +159,8 @@
 
 .footer .footer button:hover {
     background-color: #e4e4e4;
+}
+
+input[type="file"] {
+    display: none;
 }

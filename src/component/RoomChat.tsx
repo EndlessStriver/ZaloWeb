@@ -14,7 +14,7 @@ import { MyJwtIsExpired } from '../util/MyJwtDecode'
 import { useNavigate } from 'react-router'
 import Message from '../interface/master-data/Message'
 import MessageBubble from './MessageBubble'
-import { getMessagesByChatRoomId } from '../service/MessageService'
+import { createImageMessage, getMessagesByChatRoomId } from '../service/MessageService'
 import Profile from './Profile'
 
 interface RoomChatProps {
@@ -39,6 +39,9 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     const [pageOption, setPageOption] = useState({ currentPage: 0, totalPages: 10 });
     const [isLoadMessage, setIsLoadMessage] = useState<boolean>(false);
     const [isShowProfile, setIsShowProfile] = useState<boolean>(false);
+    const [fileSelect, setFileSelect] = useState<File | null>(null);
+    const [isSendImage, setIsSendImage] = useState<boolean>(false);
+    const refInputFile = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (socket && roomInfo) {
@@ -113,6 +116,33 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
 
     }, [roomInfo, isCreateRoom]);
 
+    useEffect(() => {
+        if (fileSelect !== null && roomInfo) {
+            const handleSendImage = async () => {
+                try {
+                    if (await MyJwtIsExpired() === true) {
+                        dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+                        navigate("/auth/login");
+                        return;
+                    }
+                    setIsSendImage(true);
+                    await createImageMessage(roomInfo.chatRoomId, fileSelect);
+                    setFileSelect(null);
+                    dispatch({ type: "success", payload: "Gửi ảnh thành công" });
+                    setIsSendImage(false);
+                } catch (error) {
+                    setIsSendImage(false);
+                    if (axios.isAxiosError(error) && error.response) {
+                        dispatch({ type: "error", payload: error.response.data.message });
+                    } else {
+                        dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+                    }
+                }
+            }
+            handleSendImage();
+        }
+    }, [fileSelect])
+
     const onSendMessage = async () => {
         if (await MyJwtIsExpired() === true) {
             dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
@@ -181,6 +211,12 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
         }
     }
 
+    const handleSelectFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            setFileSelect(event.target.files[0]);
+        }
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -204,6 +240,13 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                         <p>Đang tải tin nhắn...</p>
                     </div>
                 }
+                {
+                    isSendImage &&
+                    <div className={styles.sendingImage}>
+                        <FontAwesomeIcon icon={faImage} size='lg' color="gray" />
+                        <p>Đang gửi ảnh...</p>
+                    </div>
+                }
             </div>
             <div
                 ref={myBody}
@@ -218,7 +261,19 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
             </div>
             <div className={styles.footer}>
                 <div className={styles.header}>
-                    <button>
+                    <button
+                        disabled={isSendImage}
+                        onClick={() => {
+                            if (refInputFile.current) refInputFile.current.click();
+                        }}
+                    >
+                        <input
+                            ref={refInputFile}
+                            className={styles.inputFile}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleSelectFile}
+                        />
                         <FontAwesomeIcon icon={faImage} size='xl' color="gray" />
                     </button>
                     <button>

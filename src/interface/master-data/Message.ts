@@ -4,7 +4,9 @@ interface Message {
     messageId: string;
     user: User;
     timestamp: string;
-    content: string;
+    content?: string;
+    imageUrl?: string;
+    typeImage?: string;
 }
 
 export default Message;
