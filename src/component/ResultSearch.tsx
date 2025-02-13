@@ -4,6 +4,9 @@ import User from '../interface/master-data/User';
 import { faLightbulb } from '@fortawesome/free-regular-svg-icons';
 import AvtDefault from '../../public/images/avt_default.png';
 import ChatRoom from '../interface/master-data/ChatRoom';
+import Profile from './Profile';
+import { useState } from 'react';
+import Account from '../interface/master-data/Account';
 
 interface ResultSearchProps {
     users: User[];
@@ -15,6 +18,11 @@ interface ResultSearchProps {
 }
 
 const ResultSearch: React.FC<ResultSearchProps> = (props) => {
+
+    const [isShowProfile, setIsShowProfile] = useState(false);
+    const [userSelect, setUserSelect] = useState<User | null>(null);
+    const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
+
     return (
         <div className={styles.container}>
             {
@@ -35,9 +43,14 @@ const ResultSearch: React.FC<ResultSearchProps> = (props) => {
                                     props.users.map((user) => (
                                         <div
                                             onClick={() => {
-                                                props.setUser(user);
-                                                props.setRoom(null);
-                                                props.setIsShowChatRoom(true);
+                                                if (user.userId === myUser.user.userId) {
+                                                    setIsShowProfile(true);
+                                                    setUserSelect(user);
+                                                } else {
+                                                    props.setUser(user);
+                                                    props.setRoom(null);
+                                                    props.setIsShowChatRoom(true);
+                                                }
                                             }}
                                             key={user.userId}
                                             className={styles.item}
@@ -72,6 +85,16 @@ const ResultSearch: React.FC<ResultSearchProps> = (props) => {
                             </div>
                         }
                     </div>
+            }
+            {
+                isShowProfile && userSelect &&
+                <Profile
+                    user={userSelect}
+                    setIsShowProfile={setIsShowProfile}
+                    setUser={setUserSelect}
+                    setIsShowChatRoom={props.setIsShowChatRoom}
+                    isShowProfile={isShowProfile}
+                />
             }
         </div>
     )
