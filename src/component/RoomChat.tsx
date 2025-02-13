@@ -7,14 +7,14 @@ import User from '../interface/master-data/User'
 import ChatRoom from '../interface/master-data/ChatRoom'
 import { createSingleChatRoom, getChatRoomForUsers } from '../service/ChatRoomService'
 import { SocketContext } from '../context/SocketContext'
-import Account from '../interface/master-data/Account'
+// import Account from '../interface/master-data/Account'
 import { NotifyContext } from '../context/NotifyContext'
 import axios from 'axios'
 import { MyJwtIsExpired } from '../util/MyJwtDecode'
 import { useNavigate } from 'react-router'
 import Message from '../interface/master-data/Message'
 import MessageBubble from './MessageBubble'
-import { createImageMessage, createTextMessage, getMessagesByChatRoomId } from '../service/MessageService'
+import { createFileMessage, createImageMessage, createTextMessage, getMessagesByChatRoomId } from '../service/MessageService'
 import Profile from './Profile'
 
 interface RoomChatProps {
@@ -31,7 +31,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     const navigate = useNavigate();
 
     const [messages, setMessages] = useState<Message[]>([]);
-    const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
+    // const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
     const [messageSend, setMessageSend] = useState<string>("");
     const [roomInfo, setRoomInfo] = useState<ChatRoom>();
     const [isCreateRoom, setIsCreateRoom] = useState<boolean>(false);
@@ -40,7 +40,10 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     const [isLoadMessage, setIsLoadMessage] = useState<boolean>(false);
     const [isShowProfile, setIsShowProfile] = useState<boolean>(false);
     const [fileSelect, setFileSelect] = useState<File | null>(null);
+    const [imageSelect, setImageSelect] = useState<File | null>(null);
     const [isSendImage, setIsSendImage] = useState<boolean>(false);
+    const [isSendFile, setIsSendFile] = useState<boolean>(false);
+    const refInputFileImage = useRef<HTMLInputElement>(null);
     const refInputFile = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -117,7 +120,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     }, [roomInfo, isCreateRoom]);
 
     useEffect(() => {
-        if (fileSelect !== null && roomInfo) {
+        if (imageSelect !== null && roomInfo) {
             const handleSendImage = async () => {
                 try {
                     if (await MyJwtIsExpired() === true) {
@@ -126,11 +129,12 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                         return;
                     }
                     setIsSendImage(true);
-                    await createImageMessage(roomInfo.chatRoomId, fileSelect);
+                    await createImageMessage(roomInfo.chatRoomId, imageSelect);
                     setFileSelect(null);
                     dispatch({ type: "success", payload: "Gửi ảnh thành công" });
                     setIsSendImage(false);
                 } catch (error) {
+                    setFileSelect(null);
                     setIsSendImage(false);
                     if (axios.isAxiosError(error) && error.response) {
                         dispatch({ type: "error", payload: error.response.data.message });
@@ -141,7 +145,33 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
             }
             handleSendImage();
         }
-    }, [fileSelect])
+
+        if (fileSelect !== null && roomInfo) {
+            const handleSendImage = async () => {
+                try {
+                    if (await MyJwtIsExpired() === true) {
+                        dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+                        navigate("/auth/login");
+                        return;
+                    }
+                    setIsSendFile(true);
+                    await createFileMessage(roomInfo.chatRoomId, fileSelect);
+                    setImageSelect(null);
+                    dispatch({ type: "success", payload: "Gửi file thành công" });
+                    setIsSendFile(false);
+                } catch (error) {
+                    setIsSendFile(false);
+                    setImageSelect(null);
+                    if (axios.isAxiosError(error) && error.response) {
+                        dispatch({ type: "error", payload: error.response.data.message });
+                    } else {
+                        dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+                    }
+                }
+            }
+            handleSendImage();
+        }
+    }, [imageSelect, fileSelect])
 
     const onSendMessage = async () => {
         if (await MyJwtIsExpired() === true) {
@@ -220,8 +250,11 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     }
 
     const handleSelectFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
+        if (event.target.files && event.target.name === 'file') {
             setFileSelect(event.target.files[0]);
+        }
+        if (event.target.files && event.target.name === 'image') {
+            setImageSelect(event.target.files[0]);
         }
     }
 
@@ -255,6 +288,13 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                         <p>Đang gửi ảnh...</p>
                     </div>
                 }
+                {
+                    isSendFile &&
+                    <div className={styles.sendingImage}>
+                        <FontAwesomeIcon icon={faFile} size='lg' color="gray" />
+                        <p>Đang gửi file...</p>
+                    </div>
+                }
             </div>
             <div
                 ref={myBody}
@@ -272,6 +312,22 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                     <button
                         disabled={isSendImage}
                         onClick={() => {
+                            if (refInputFileImage.current) refInputFileImage.current.click();
+                        }}
+                    >
+                        <input
+                            ref={refInputFileImage}
+                            className={styles.inputFile}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleSelectFile}
+                            name='image'
+                        />
+                        <FontAwesomeIcon icon={faImage} size='xl' color="gray" />
+                    </button>
+                    <button
+                        disabled={isSendImage}
+                        onClick={() => {
                             if (refInputFile.current) refInputFile.current.click();
                         }}
                     >
@@ -279,12 +335,10 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                             ref={refInputFile}
                             className={styles.inputFile}
                             type="file"
-                            accept="image/*"
+                            accept="application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                             onChange={handleSelectFile}
+                            name='file'
                         />
-                        <FontAwesomeIcon icon={faImage} size='xl' color="gray" />
-                    </button>
-                    <button>
                         <FontAwesomeIcon icon={faFile} size='xl' color="gray" />
                     </button>
                 </div>

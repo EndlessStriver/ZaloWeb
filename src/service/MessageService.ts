@@ -30,6 +30,18 @@ const createImageMessage = async (chatRoomId: string, image: File): Promise<Mess
     return response.data.data
 }
 
+const createFileMessage = async (chatRoomId: string, file: File): Promise<Message> => {
+    const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
+    const accessToken = localStorage.getItem('accessToken');
+
+    const formData = new FormData();
+    formData.append('chatRoomId', chatRoomId);
+    formData.append('file', file);
+
+    const response = await axios.post(`${API_ENDPOINT}/messages/files`, formData, { headers: { Authorization: `Bearer ${accessToken}` } });
+    return response.data.data
+}
+
 const createTextMessage = async (chatRoomId: string, content: string): Promise<Message> => {
     const API_ENDPOINT = import.meta.env.VITE_API_API_ENDPOINT;
     const accessToken = localStorage.getItem('accessToken');
@@ -38,4 +50,4 @@ const createTextMessage = async (chatRoomId: string, content: string): Promise<M
     return response.data.data
 }
 
-export { getMessagesByChatRoomId, createImageMessage, createTextMessage }
+export { getMessagesByChatRoomId, createImageMessage, createTextMessage, createFileMessage }

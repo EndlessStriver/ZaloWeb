@@ -6,7 +6,11 @@ interface Message {
     timestamp: string;
     content?: string;
     imageUrl?: string;
+    imageName?: string;
     typeImage?: string;
+    fileUrl?: string;
+    fileName?: string;
+    typeFile?: string;
 }
 
 export default Message;

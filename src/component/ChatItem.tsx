@@ -6,6 +6,7 @@ import User from '../interface/master-data/User';
 import { formatDateTimeChatBubble } from '../util/FunctionGlobal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
+import { faFile } from '@fortawesome/free-solid-svg-icons';
 
 interface ChatItemProps {
     chatRoom: ChatRoom;
@@ -56,6 +57,11 @@ const ChatItem: React.FC<ChatItemProps> = (props) => {
                 {
                     props.chatRoom.newMessage?.imageUrl && <p className={styles.content}>
                         <FontAwesomeIcon icon={faImage} /> Hình ảnh
+                    </p>
+                }
+                {
+                    props.chatRoom.newMessage?.fileUrl && <p className={styles.content}>
+                        <FontAwesomeIcon icon={faFile} /> File
                     </p>
                 }
             </div>
