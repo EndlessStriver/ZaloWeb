@@ -120,7 +120,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     }, [roomInfo, isCreateRoom]);
 
     useEffect(() => {
-        if (imageSelect !== null && roomInfo) {
+        if (imageSelect !== null && fileSelect === null) {
             const handleSendImage = async () => {
                 try {
                     if (await MyJwtIsExpired() === true) {
@@ -128,13 +128,24 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                         navigate("/auth/login");
                         return;
                     }
-                    setIsSendImage(true);
-                    await createImageMessage(roomInfo.chatRoomId, imageSelect);
-                    setFileSelect(null);
-                    dispatch({ type: "success", payload: "Gửi ảnh thành công" });
-                    setIsSendImage(false);
+                    if (!roomInfo || !isCreateRoom) {
+                        if (props.user) {
+                            setIsSendImage(true);
+                            const response = await createSingleChatRoom(props.user.userId);
+                            setIsCreateRoom(true);
+                            setRoomInfo(response);
+                            await createImageMessage(response.chatRoomId, imageSelect);
+                            setImageSelect(null);
+                            setIsSendImage(false);
+                        }
+                    } else {
+                        setIsSendImage(true);
+                        await createImageMessage(roomInfo.chatRoomId, imageSelect);
+                        setImageSelect(null);
+                        setIsSendImage(false);
+                    }
                 } catch (error) {
-                    setFileSelect(null);
+                    setImageSelect(null);
                     setIsSendImage(false);
                     if (axios.isAxiosError(error) && error.response) {
                         dispatch({ type: "error", payload: error.response.data.message });
@@ -146,7 +157,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
             handleSendImage();
         }
 
-        if (fileSelect !== null && roomInfo) {
+        if (fileSelect !== null && imageSelect === null) {
             const handleSendImage = async () => {
                 try {
                     if (await MyJwtIsExpired() === true) {
@@ -154,14 +165,24 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                         navigate("/auth/login");
                         return;
                     }
-                    setIsSendFile(true);
-                    await createFileMessage(roomInfo.chatRoomId, fileSelect);
-                    setImageSelect(null);
-                    dispatch({ type: "success", payload: "Gửi file thành công" });
-                    setIsSendFile(false);
+                    if (!roomInfo || !isCreateRoom) {
+                        if (props.user) {
+                            setIsSendFile(true);
+                            const response = await createSingleChatRoom(props.user.userId);
+                            setIsCreateRoom(true);
+                            await createFileMessage(response.chatRoomId, fileSelect);
+                            setFileSelect(null);
+                            setIsSendFile(false);
+                        }
+                    } else {
+                        setIsSendFile(true);
+                        await createFileMessage(roomInfo.chatRoomId, fileSelect);
+                        setFileSelect(null);
+                        setIsSendFile(false);
+                    }
                 } catch (error) {
                     setIsSendFile(false);
-                    setImageSelect(null);
+                    setFileSelect(null);
                     if (axios.isAxiosError(error) && error.response) {
                         dispatch({ type: "error", payload: error.response.data.message });
                     } else {
@@ -171,7 +192,8 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
             }
             handleSendImage();
         }
-    }, [imageSelect, fileSelect])
+
+    }, [imageSelect, fileSelect]);
 
     const onSendMessage = async () => {
         if (await MyJwtIsExpired() === true) {
