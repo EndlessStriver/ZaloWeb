@@ -49,3 +49,4 @@ const NotifyProvider: React.FC<NotifyProviderProps> = ({ children }) => {
 };
 
 export { NotifyProvider, NotifyContext };
+export type { NotifyAction }

@@ -9,14 +9,13 @@ import { createSingleChatRoom, getChatRoomForUsers } from '../service/ChatRoomSe
 import { SocketContext } from '../context/SocketContext'
 // import Account from '../interface/master-data/Account'
 import { NotifyContext } from '../context/NotifyContext'
-import axios from 'axios'
-import { MyJwtIsExpired } from '../util/MyJwtDecode'
 import { useNavigate } from 'react-router'
 import Message from '../interface/master-data/Message'
 import MessageBubble from './MessageBubble'
 import { createFileMessage, createImageMessage, createTextMessage, getMessagesByChatRoomId } from '../service/MessageService'
 import Profile from './Profile'
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
+import { checkErrorResponse, checkJWT } from '../util/FunctionGlobal'
 
 interface RoomChatProps {
     user: User | null;
@@ -35,17 +34,22 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     // const myUser: Account = JSON.parse(localStorage.getItem("user") as string);
     const [messageSend, setMessageSend] = useState<string>("");
     const [roomInfo, setRoomInfo] = useState<ChatRoom>();
-    const [isCreateRoom, setIsCreateRoom] = useState<boolean>(false);
     const myBody = useRef<HTMLDivElement>(null);
     const [pageOption, setPageOption] = useState({ currentPage: 0, totalPages: 10 });
+
+    const [isCreateRoom, setIsCreateRoom] = useState<boolean>(false);
     const [isLoadMessage, setIsLoadMessage] = useState<boolean>(false);
     const [isShowProfile, setIsShowProfile] = useState<boolean>(false);
-    const [fileSelect, setFileSelect] = useState<File | null>(null);
-    const [imageSelect, setImageSelect] = useState<File | null>(null);
     const [isSendImage, setIsSendImage] = useState<boolean>(false);
     const [isSendFile, setIsSendFile] = useState<boolean>(false);
+
+    const [fileSelect, setFileSelect] = useState<File | null>(null);
+    const [imageSelect, setImageSelect] = useState<File | null>(null);
+
     const refInputFileImage = useRef<HTMLInputElement>(null);
     const refInputFile = useRef<HTMLInputElement>(null);
+
+    // const [friendType, setFriendType] = useState<"NOT_FRIEND" | "FRIEND" | "REQUEST_SENT" | "REQUEST_RECEIVED" | "IS_YOU">("IS_YOU");
 
     useEffect(() => {
         if (socket && roomInfo) {
@@ -60,32 +64,29 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     useEffect(() => {
         const getRoomInfo = async () => {
             try {
-                if (await MyJwtIsExpired() === true) {
-                    dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-                    navigate("/auth/login");
-                    return;
-                }
+                if (await checkJWT(dispatch, navigate)) return;
                 if (props.user) {
                     const response = await getChatRoomForUsers(props.user.userId);
                     if (response) {
                         setIsCreateRoom(true);
                         setRoomInfo(response);
-                    } else {
+                        return;
+                    }
+                    if (!response) {
                         setIsCreateRoom(false);
                         setMessages([]);
+                        return;
                     }
-                } else {
-                    if (props.room) {
-                        setIsCreateRoom(true);
-                        setRoomInfo(props.room);
-                    }
+                    return;
                 }
+                if (props.room) {
+                    setIsCreateRoom(true);
+                    setRoomInfo(props.room);
+                    return;
+                }
+                throw new Error("Không tìm thấy thông tin phòng chat");
             } catch (error) {
-                if (axios.isAxiosError(error) && error.response) {
-                    dispatch({ type: "error", payload: error.response.data.message });
-                } else {
-                    dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
-                }
+                checkErrorResponse(error, dispatch);
             }
         }
         getRoomInfo();
@@ -94,41 +95,29 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
     useEffect(() => {
         const getMessageRoom = async () => {
             try {
-                if (await MyJwtIsExpired() === true) {
-                    dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-                    navigate("/auth/login");
-                    return;
-                }
+                if (await checkJWT(dispatch, navigate)) return;
                 if (roomInfo) {
                     setIsLoadMessage(true);
                     const response = await getMessagesByChatRoomId(roomInfo.chatRoomId, { orderBy: "desc", currentPage: 0 });
                     setPageOption({ currentPage: response.currentPage, totalPages: response.totalPages });
                     setMessages(response.data.reverse());
                     setIsLoadMessage(false);
+                    return;
                 }
+                throw new Error("Không tìm thấy thông tin phòng chat");
             } catch (error) {
                 setIsLoadMessage(false);
-                if (axios.isAxiosError(error) && error.response) {
-                    dispatch({ type: "error", payload: error.response.data.message });
-                } else {
-                    dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
-                }
+                checkErrorResponse(error, dispatch);
             }
         }
-
-        if (roomInfo && isCreateRoom) getMessageRoom();
-
-    }, [roomInfo, isCreateRoom]);
+        if (roomInfo) getMessageRoom();
+    }, [roomInfo]);
 
     useEffect(() => {
-        if (imageSelect !== null && fileSelect === null) {
+        if (imageSelect !== null) {
             const handleSendImage = async () => {
                 try {
-                    if (await MyJwtIsExpired() === true) {
-                        dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-                        navigate("/auth/login");
-                        return;
-                    }
+                    if (await checkJWT(dispatch, navigate)) return;
                     if (!roomInfo || !isCreateRoom) {
                         if (props.user) {
                             setIsSendImage(true);
@@ -138,34 +127,28 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                             await createImageMessage(response.chatRoomId, imageSelect);
                             setImageSelect(null);
                             setIsSendImage(false);
+                            return;
                         }
-                    } else {
-                        setIsSendImage(true);
-                        await createImageMessage(roomInfo.chatRoomId, imageSelect);
-                        setImageSelect(null);
-                        setIsSendImage(false);
+                        throw new Error("Không tìm thấy thông tin phòng chat");
                     }
+                    setIsSendImage(true);
+                    await createImageMessage(roomInfo.chatRoomId, imageSelect);
+                    setImageSelect(null);
+                    setIsSendImage(false);
                 } catch (error) {
                     setImageSelect(null);
                     setIsSendImage(false);
-                    if (axios.isAxiosError(error) && error.response) {
-                        dispatch({ type: "error", payload: error.response.data.message });
-                    } else {
-                        dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
-                    }
+                    checkErrorResponse(error, dispatch);
                 }
             }
             handleSendImage();
+            return;
         }
 
-        if (fileSelect !== null && imageSelect === null) {
+        if (fileSelect !== null) {
             const handleSendImage = async () => {
                 try {
-                    if (await MyJwtIsExpired() === true) {
-                        dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-                        navigate("/auth/login");
-                        return;
-                    }
+                    if (await checkJWT(dispatch, navigate)) return;
                     if (!roomInfo || !isCreateRoom) {
                         if (props.user) {
                             setIsSendFile(true);
@@ -174,77 +157,58 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                             await createFileMessage(response.chatRoomId, fileSelect);
                             setFileSelect(null);
                             setIsSendFile(false);
+                            return;
                         }
-                    } else {
-                        setIsSendFile(true);
-                        await createFileMessage(roomInfo.chatRoomId, fileSelect);
-                        setFileSelect(null);
-                        setIsSendFile(false);
+                        throw new Error("Không tìm thấy thông tin phòng chat");
                     }
+                    setIsSendFile(true);
+                    await createFileMessage(roomInfo.chatRoomId, fileSelect);
+                    setFileSelect(null);
+                    setIsSendFile(false);
                 } catch (error) {
                     setIsSendFile(false);
                     setFileSelect(null);
-                    if (axios.isAxiosError(error) && error.response) {
-                        dispatch({ type: "error", payload: error.response.data.message });
-                    } else {
-                        dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
-                    }
+                    checkErrorResponse(error, dispatch);
                 }
             }
             handleSendImage();
+            return;
         }
 
     }, [imageSelect, fileSelect]);
 
     const onSendMessage = async () => {
-        if (await MyJwtIsExpired() === true) {
-            dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-            navigate("/auth/login");
-            return;
-        }
-        if (!messageSend) {
-            dispatch({ type: "info", payload: "Vui lòng nhập nội dung tin nhắn" });
-            return;
-        }
-        if (isCreateRoom === false) {
-            if (props.user) {
-                try {
+        try {
+            if (!messageSend) {
+                dispatch({ type: "info", payload: "Vui lòng nhập nội dung tin nhắn" });
+                return;
+            }
+            if (await checkJWT(dispatch, navigate)) return;
+            if (!roomInfo) {
+                if (props.user) {
                     const response = await createSingleChatRoom(props.user.userId);
                     setIsCreateRoom(true);
                     setRoomInfo(response);
                     await createTextMessage(response.chatRoomId, messageSend);
                     setMessageSend("");
-                } catch (error) {
-                    if (axios.isAxiosError(error) && error.response) {
-                        dispatch({ type: "error", payload: error.response.data.message });
-                    } else {
-                        dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
-                    }
+                    return;
                 }
+                throw new Error("Phòng chat không tồn tại");
             }
-        } else {
-            if (roomInfo && socket) {
-                try {
-                    await createTextMessage(roomInfo.chatRoomId, messageSend);
-                    setMessageSend("");
-                } catch (error) {
-                    if (axios.isAxiosError(error) && error.response) {
-                        dispatch({ type: "error", payload: error.response.data.message });
-                    } else {
-                        dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
-                    }
-                }
+            if (roomInfo) {
+                await createTextMessage(roomInfo.chatRoomId, messageSend);
+                setMessageSend("");
+                return;
             }
+            throw new Error("Có lỗi khi gửi tin nhắn vui lòng thử lại sau");
+        } catch (error) {
+            checkErrorResponse(error, dispatch);
         }
     }
 
     const loadMoreMessage = async () => {
         try {
-            if (await MyJwtIsExpired() === true) {
-                dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
-                navigate("/auth/login");
-                return;
-            }
+            if (await checkJWT(dispatch, navigate)) return;
             if (roomInfo && pageOption.currentPage + 1 <= pageOption.totalPages) {
                 setIsLoadMessage(true);
                 const response = await getMessagesByChatRoomId(roomInfo.chatRoomId, { orderBy: "desc", currentPage: pageOption.currentPage + 1 });
@@ -254,11 +218,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
             }
         } catch (error) {
             setIsLoadMessage(false);
-            if (axios.isAxiosError(error) && error.response) {
-                dispatch({ type: "error", payload: error.response.data.message });
-            } else {
-                dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
-            }
+            checkErrorResponse(error, dispatch);
         }
     }
 

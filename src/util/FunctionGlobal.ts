@@ -1,3 +1,8 @@
+import axios from "axios";
+import { NotifyAction } from "../context/NotifyContext";
+import { MyJwtIsExpired } from "./MyJwtDecode";
+import { NavigateFunction } from "react-router";
+
 function formatDateTimeChatBubble(dateStr: string): string {
     const date = new Date(dateStr);
 
@@ -20,4 +25,21 @@ function formatDate(dateStr: string): string {
     return `${day}/${month}/${year}`;
 }
 
-export { formatDateTimeChatBubble, formatDate };
+function checkErrorResponse(error: unknown, dispatch: React.Dispatch<NotifyAction>): void {
+    if (axios.isAxiosError(error) && error.response) {
+        dispatch({ type: "error", payload: error.response.data.message });
+    } else {
+        dispatch({ type: "error", payload: "Đang có lỗi xảy ra, vui lòng kiểm tra lại kết nối" });
+    }
+}
+
+async function checkJWT(dispatch: React.Dispatch<NotifyAction>, navigate: NavigateFunction): Promise<boolean> {
+    if (await MyJwtIsExpired() === true) {
+        dispatch({ type: "error", payload: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại" });
+        navigate("/auth/login");
+        return true;
+    }
+    return false;
+}
+
+export { formatDateTimeChatBubble, formatDate, checkErrorResponse, checkJWT };
