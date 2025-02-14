@@ -76,11 +76,9 @@
 }
 
 .body .receivedFriendRequests {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 10px;
     width: 100%;
 }
 
@@ -89,7 +87,6 @@
     flex-direction: column;
     padding: 15px;
     background-color: #ffffff;
-    width: 400px;
     border-radius: 8px;
     user-select: none;
     gap: 15px;

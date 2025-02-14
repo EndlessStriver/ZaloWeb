@@ -16,6 +16,7 @@ import Message from '../interface/master-data/Message'
 import MessageBubble from './MessageBubble'
 import { createFileMessage, createImageMessage, createTextMessage, getMessagesByChatRoomId } from '../service/MessageService'
 import Profile from './Profile'
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
 interface RoomChatProps {
     user: User | null;
@@ -287,9 +288,7 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                     onClick={() => setIsShowProfile(true)}
                     className={styles.headerLeft}
                 >
-                    <div className={styles.headerLeftAvatar}>
-                        <img src={AvtDefault} alt="avatar" />
-                    </div>
+                    <img src={AvtDefault} alt="avatar" />
                     <span className={styles.headerLeftName}>
                         {
                             props.user ? props.user.firstName + " " + props.user.lastName : props.room?.roomName
@@ -312,9 +311,20 @@ const RoomChat: React.FC<RoomChatProps> = (props) => {
                 }
                 {
                     isSendFile &&
-                    <div className={styles.sendingImage}>
+                    <div className={styles.sendingFile}>
                         <FontAwesomeIcon icon={faFile} size='lg' color="gray" />
                         <p>Đang gửi file...</p>
+                    </div>
+                }
+                {
+                    <div className={styles.notFriend}>
+                        <p className={styles.description}>
+                            <FontAwesomeIcon icon={faUserPlus} size='lg' color="gray" />
+                            Gửi yêu cầu kết bạn tới người ngày
+                        </p>
+                        <button>
+                            Gửi kết bạn
+                        </button>
                     </div>
                 }
             </div>

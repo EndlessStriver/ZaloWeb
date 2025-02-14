@@ -23,7 +23,7 @@
 }
 
 .content {
-    font-size: 16px;
+    font-size: 1rem;
     color: #000000;
 }
 
@@ -37,7 +37,7 @@
 }
 
 .timestamp {
-    font-size: 12px;
+    font-size: 0.7rem;
     color: #000000;
 }
 
